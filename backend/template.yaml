@@ -1,0 +1,291 @@
+AWSTemplateFormatVersion: '2010-09-09'
+Transform: AWS::Serverless-2016-10-31
+Description: UtilitySync — Underground Utility Infrastructure Intelligence Backend
+
+# ── Global Defaults ─────────────────────────────────────────────
+Globals:
+  Function:
+    Runtime: python3.11
+    MemorySize: 512
+    Timeout: 60
+    Environment:
+      Variables:
+        CORRIDORS_TABLE:    !Ref CorridorsTable
+        UTILITIES_TABLE:    !Ref UtilitiesTable
+        PROJECTS_TABLE:     !Ref ProjectsTable
+        CONTRACTORS_TABLE:  !Ref ContractorsTable
+        TWIN_TABLE:         !Ref DigitalTwinTable
+        KNOWLEDGE_BUCKET:   !Ref KnowledgeBucket
+        BEDROCK_KB_ID:      !Ref BedrockKBId
+        BEDROCK_MODEL_ID:   "anthropic.claude-3-5-sonnet-20241022-v2:0"
+        AWS_ACCOUNT_ID:     !Sub "${AWS::AccountId}"
+  Api:
+    Cors:
+      AllowMethods: "'GET,POST,PUT,DELETE,OPTIONS'"
+      AllowHeaders: "'Content-Type,Authorization'"
+      AllowOrigin:  "'*'"
+
+# ── Parameters ──────────────────────────────────────────────────
+Parameters:
+  BedrockKBId:
+    Type: String
+    Default: "PLACEHOLDER_KB_ID"
+    Description: Amazon Bedrock Knowledge Base ID (update after KB is created)
+
+  Stage:
+    Type: String
+    Default: prod
+    AllowedValues: [dev, prod]
+
+# ── Resources ───────────────────────────────────────────────────
+Resources:
+
+  # ── API Gateway ─────────────────────────────────────
+  UtilitySyncAPI:
+    Type: AWS::Serverless::Api
+    Properties:
+      Name: utilitysync-api
+      StageName: !Ref Stage
+      Description: UtilitySync REST API
+
+  # ── Planning API Lambda ──────────────────────────────
+  PlanningApiFunction:
+    Type: AWS::Serverless::Function
+    Properties:
+      FunctionName: utilitysync-planning-api
+      CodeUri: planning_api/
+      Handler: app.lambda_handler
+      Description: Handles all corridor, project, contractor and twin CRUD + analysis
+      Policies:
+        - DynamoDBCrudPolicy:
+            TableName: !Ref CorridorsTable
+        - DynamoDBCrudPolicy:
+            TableName: !Ref UtilitiesTable
+        - DynamoDBCrudPolicy:
+            TableName: !Ref ProjectsTable
+        - DynamoDBCrudPolicy:
+            TableName: !Ref ContractorsTable
+        - DynamoDBCrudPolicy:
+            TableName: !Ref DigitalTwinTable
+      Events:
+        # Corridors
+        CreateCorridor:
+          Type: Api
+          Properties:
+            RestApiId: !Ref UtilitySyncAPI
+            Path: /corridors
+            Method: POST
+        GetCorridor:
+          Type: Api
+          Properties:
+            RestApiId: !Ref UtilitySyncAPI
+            Path: /corridors/{corridorId}
+            Method: GET
+        ListCorridors:
+          Type: Api
+          Properties:
+            RestApiId: !Ref UtilitySyncAPI
+            Path: /corridors
+            Method: GET
+        # Analysis
+        AnalyzeCorridor:
+          Type: Api
+          Properties:
+            RestApiId: !Ref UtilitySyncAPI
+            Path: /corridors/{corridorId}/analyze
+            Method: POST
+        # Projects
+        CreateProject:
+          Type: Api
+          Properties:
+            RestApiId: !Ref UtilitySyncAPI
+            Path: /projects
+            Method: POST
+        GetProject:
+          Type: Api
+          Properties:
+            RestApiId: !Ref UtilitySyncAPI
+            Path: /projects/{projectId}
+            Method: GET
+        GetConstructionPlan:
+          Type: Api
+          Properties:
+            RestApiId: !Ref UtilitySyncAPI
+            Path: /projects/{projectId}/construction-plan
+            Method: GET
+        # Contractors
+        ListContractors:
+          Type: Api
+          Properties:
+            RestApiId: !Ref UtilitySyncAPI
+            Path: /contractors
+            Method: GET
+        MatchContractors:
+          Type: Api
+          Properties:
+            RestApiId: !Ref UtilitySyncAPI
+            Path: /contractors/match/{projectId}
+            Method: GET
+        # Digital Twin
+        GetTwin:
+          Type: Api
+          Properties:
+            RestApiId: !Ref UtilitySyncAPI
+            Path: /digital-twin/{corridorId}
+            Method: GET
+        SimulateTwin:
+          Type: Api
+          Properties:
+            RestApiId: !Ref UtilitySyncAPI
+            Path: /digital-twin/{corridorId}/simulate
+            Method: POST
+
+  # ── AI Agent Lambda ──────────────────────────────────
+  AIAgentFunction:
+    Type: AWS::Serverless::Function
+    Properties:
+      FunctionName: utilitysync-ai-agent
+      CodeUri: ai_agent/
+      Handler: app.lambda_handler
+      MemorySize: 1024
+      Timeout: 300
+      Description: Strands AI Agent — powered by Amazon Bedrock Claude 3.5 Sonnet
+      Policies:
+        - DynamoDBReadPolicy:
+            TableName: !Ref CorridorsTable
+        - DynamoDBReadPolicy:
+            TableName: !Ref ProjectsTable
+        - DynamoDBReadPolicy:
+            TableName: !Ref ContractorsTable
+        - DynamoDBReadPolicy:
+            TableName: !Ref DigitalTwinTable
+        - S3ReadPolicy:
+            BucketName: !Ref KnowledgeBucket
+        - Statement:
+          - Effect: Allow
+            Action:
+              - bedrock:InvokeModel
+              - bedrock:InvokeModelWithResponseStream
+              - bedrock-agent-runtime:Retrieve
+              - bedrock-agent-runtime:RetrieveAndGenerate
+            Resource: "*"
+      Events:
+        ChatEndpoint:
+          Type: Api
+          Properties:
+            RestApiId: !Ref UtilitySyncAPI
+            Path: /agent/chat
+            Method: POST
+
+  # ── DynamoDB Tables ──────────────────────────────────
+  CorridorsTable:
+    Type: AWS::DynamoDB::Table
+    Properties:
+      TableName: utilitysync-corridors
+      BillingMode: PAY_PER_REQUEST
+      AttributeDefinitions:
+        - AttributeName: corridorId
+          AttributeType: S
+        - AttributeName: sk
+          AttributeType: S
+      KeySchema:
+        - AttributeName: corridorId
+          KeyType: HASH
+        - AttributeName: sk
+          KeyType: RANGE
+
+  UtilitiesTable:
+    Type: AWS::DynamoDB::Table
+    Properties:
+      TableName: utilitysync-utilities
+      BillingMode: PAY_PER_REQUEST
+      AttributeDefinitions:
+        - AttributeName: corridorId
+          AttributeType: S
+        - AttributeName: utilityId
+          AttributeType: S
+      KeySchema:
+        - AttributeName: corridorId
+          KeyType: HASH
+        - AttributeName: utilityId
+          KeyType: RANGE
+
+  ProjectsTable:
+    Type: AWS::DynamoDB::Table
+    Properties:
+      TableName: utilitysync-projects
+      BillingMode: PAY_PER_REQUEST
+      AttributeDefinitions:
+        - AttributeName: projectId
+          AttributeType: S
+        - AttributeName: sk
+          AttributeType: S
+      KeySchema:
+        - AttributeName: projectId
+          KeyType: HASH
+        - AttributeName: sk
+          KeyType: RANGE
+
+  ContractorsTable:
+    Type: AWS::DynamoDB::Table
+    Properties:
+      TableName: utilitysync-contractors
+      BillingMode: PAY_PER_REQUEST
+      AttributeDefinitions:
+        - AttributeName: contractorId
+          AttributeType: S
+        - AttributeName: sk
+          AttributeType: S
+      KeySchema:
+        - AttributeName: contractorId
+          KeyType: HASH
+        - AttributeName: sk
+          KeyType: RANGE
+
+  DigitalTwinTable:
+    Type: AWS::DynamoDB::Table
+    Properties:
+      TableName: utilitysync-digital-twin
+      BillingMode: PAY_PER_REQUEST
+      AttributeDefinitions:
+        - AttributeName: corridorId
+          AttributeType: S
+        - AttributeName: elementId
+          AttributeType: S
+      KeySchema:
+        - AttributeName: corridorId
+          KeyType: HASH
+        - AttributeName: elementId
+          KeyType: RANGE
+
+  # ── S3 Knowledge Bucket ───────────────────────────────
+  KnowledgeBucket:
+    Type: AWS::S3::Bucket
+    Properties:
+      BucketName: !Sub "utilitysync-knowledge-${AWS::AccountId}-${AWS::Region}"
+      VersioningConfiguration:
+        Status: Enabled
+      BucketEncryption:
+        ServerSideEncryptionConfiguration:
+          - ServerSideEncryptionByDefault:
+              SSEAlgorithm: AES256
+
+# ── Outputs ──────────────────────────────────────────────────────
+Outputs:
+  ApiEndpoint:
+    Description: API Gateway endpoint URL
+    Value: !Sub "https://${UtilitySyncAPI}.execute-api.${AWS::Region}.amazonaws.com/${Stage}"
+    Export:
+      Name: UtilitySyncAPIEndpoint
+
+  KnowledgeBucketName:
+    Description: S3 bucket for knowledge base documents
+    Value: !Ref KnowledgeBucket
+    Export:
+      Name: UtilitySyncKnowledgeBucket
+
+  PlanningApiFunctionArn:
+    Value: !GetAtt PlanningApiFunction.Arn
+
+  AIAgentFunctionArn:
+    Value: !GetAtt AIAgentFunction.Arn

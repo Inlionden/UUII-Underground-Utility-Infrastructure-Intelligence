@@ -1,0 +1,96 @@
+{
+  "corridors": [
+    {
+      "corridorId": "corr-001",
+      "name": "High Street, Greenway",
+      "location": "Elephant & Castle to Waterloo, London SE1",
+      "lengthKm": 2.3,
+      "widthM": 15,
+      "status": "ACTIVE",
+      "createdAt": "2024-03-15T09:00:00Z",
+      "center": [51.4996, -0.1065],
+      "route": [
+        [51.4960, -0.1010],
+        [51.4975, -0.1030],
+        [51.4990, -0.1055],
+        [51.5005, -0.1080],
+        [51.5020, -0.1100],
+        [51.5034, -0.1130]
+      ],
+      "utilities": [
+        {
+          "utilityId": "util-elec-001",
+          "type": "electricity",
+          "label": "HV Electricity Cable (11kV)",
+          "depthM": 1.0,
+          "horizontalOffsetM": -3.5,
+          "capacityPercent": 74,
+          "owner": "UK Power Networks",
+          "status": "OPERATIONAL",
+          "installDate": "2019-06-10",
+          "specs": {
+            "voltage": "11kV",
+            "cableType": "XLPE armoured",
+            "diameter": "95mm",
+            "circuitLength": "2.3km"
+          },
+          "notes": "Redundant pair installed. Eastern cable at 78% load."
+        },
+        {
+          "utilityId": "util-water-001",
+          "type": "water",
+          "label": "Water Distribution Main (300mm)",
+          "depthM": 0.9,
+          "horizontalOffsetM": -1.2,
+          "capacityPercent": 61,
+          "owner": "Thames Water",
+          "status": "OPERATIONAL",
+          "installDate": "2011-09-22",
+          "specs": {
+            "material": "Ductile Iron",
+            "diameter": "300mm",
+            "pressure": "5.5 bar",
+            "flowRate": "320 l/s"
+          },
+          "notes": "Approaching design life. Lined in 2018. Monitoring recommended by 2026."
+        },
+        {
+          "utilityId": "util-gas-001",
+          "type": "gas",
+          "label": "Gas Distribution Main (IP)",
+          "depthM": 0.75,
+          "horizontalOffsetM": 1.0,
+          "capacityPercent": 82,
+          "owner": "Cadent Gas",
+          "status": "OPERATIONAL",
+          "installDate": "2005-04-14",
+          "specs": {
+            "material": "Medium Density Polyethylene (MDPE)",
+            "diameter": "180mm",
+            "pressure": "75 mbar (IP)",
+            "type": "Intermediate Pressure"
+          },
+          "notes": "High proximity to water main — 150mm separation (below 300mm NJUG minimum). Conflict flagged."
+        },
+        {
+          "utilityId": "util-drain-001",
+          "type": "drainage",
+          "label": "Combined Sewer (600mm)",
+          "depthM": 1.8,
+          "horizontalOffsetM": 3.2,
+          "capacityPercent": 44,
+          "owner": "Thames Water",
+          "status": "OPERATIONAL",
+          "installDate": "1987-01-01",
+          "specs": {
+            "material": "Vitrified Clay",
+            "diameter": "600mm",
+            "type": "Combined sewer",
+            "gradient": "1:200"
+          },
+          "notes": "Victorian era asset. Significant capacity available. Structural survey due 2025."
+        }
+      ]
+    }
+  ]
+}

@@ -1,0 +1,602 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>UtilitySync — Underground Utility Infrastructure Intelligence</title>
+  <meta name="description" content="Plan shared utility corridors, reserve future capacity, build smarter, and never start a utility project from zero again." />
+  <meta name="theme-color" content="#080b14" />
+
+  <!-- Leaflet CSS -->
+  <link rel="stylesheet" href="vendor/leaflet/leaflet.css" />
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.css" onerror="this.onerror=null;" />
+
+  <!-- App CSS -->
+  <link rel="stylesheet" href="css/style.css" />
+</head>
+<body>
+
+<!-- ═══════════════════════════════════════════════════════
+     PHASE 0 — LANDING SCREEN
+═══════════════════════════════════════════════════════ -->
+<div id="phase-0">
+  <canvas id="particle-canvas"></canvas>
+  <div class="landing-content">
+    <div class="landing-logo">
+      <div class="landing-logo-icon">⚡</div>
+      <div class="landing-logo-text">UtilitySync</div>
+    </div>
+    <div class="landing-tagline">Underground Utility Infrastructure Intelligence</div>
+    <p class="landing-subtitle">
+      <strong>Treat every corridor as a shared asset.</strong> Plan what's underground,
+      reserve capacity for the future, build smarter, and reuse what you've already built.
+    </p>
+    <div class="landing-cta">
+      <button id="start-btn" class="btn-hero">
+        Start Corridor Planning
+        <span class="arrow">→</span>
+      </button>
+    </div>
+    <div class="capabilities-row">
+      <div class="cap-pill"><span class="icon">🗺️</span> Corridor Analysis</div>
+      <div class="cap-pill"><span class="icon">🔧</span> Construction Intelligence</div>
+      <div class="cap-pill"><span class="icon">👷</span> Contractor Readiness</div>
+      <div class="cap-pill"><span class="icon">🌐</span> Digital Twin</div>
+      <div class="cap-pill"><span class="icon">🤖</span> AI Assistant</div>
+    </div>
+  </div>
+</div>
+
+<!-- ═══════════════════════════════════════════════════════
+     MAIN APP  (hidden until landing CTA clicked)
+═══════════════════════════════════════════════════════ -->
+<div id="main-app" class="hidden">
+
+  <!-- ── Top Navigation ─────────────────────────── -->
+  <nav id="top-nav">
+    <a class="nav-logo" href="#" onclick="return false;">
+      <div class="nav-logo-icon">⚡</div>
+      <span class="nav-logo-text">UtilitySync</span>
+      <span class="nav-logo-badge">Beta</span>
+    </a>
+
+    <div id="stepper"><!-- Injected by stepper.js --></div>
+
+    <div class="nav-right">
+      <button id="ai-toggle-btn" class="nav-ai-btn">
+        <div class="ai-pulse"></div>
+        🤖 AI Assistant
+      </button>
+    </div>
+  </nav>
+
+  <!-- ── App Body ───────────────────────────────── -->
+  <div class="app-body">
+
+    <!-- LEFT: Map -->
+    <div id="map-section">
+      <div id="map"></div>
+
+      <!-- Map Toolbar -->
+      <div id="map-toolbar">
+        <button class="map-tool-btn" id="tool-draw" title="Draw corridor route">✏️</button>
+        <button class="map-tool-btn" id="tool-clear" title="Clear drawing">🗑️</button>
+        <button class="map-tool-btn" id="tool-fit" title="Fit corridor to view">⊡</button>
+      </div>
+
+      <!-- Layer Legend -->
+      <div id="layer-legend" class="hidden">
+        <div class="legend-title">Utility Layers</div>
+        <div class="legend-item" data-layer="electricity">
+          <div class="legend-line" style="background:var(--util-electricity)"></div>
+          Electricity (11kV)
+        </div>
+        <div class="legend-item" data-layer="water">
+          <div class="legend-line" style="background:var(--util-water)"></div>
+          Water Main
+        </div>
+        <div class="legend-item" data-layer="fiber">
+          <div class="legend-line" style="background:var(--util-fiber)"></div>
+          Fiber / Comms
+        </div>
+        <div class="legend-item" data-layer="gas">
+          <div class="legend-line" style="background:var(--util-gas)"></div>
+          Gas Main
+        </div>
+        <div class="legend-item" data-layer="drainage">
+          <div class="legend-line" style="background:var(--util-drainage)"></div>
+          Drainage / Sewer
+        </div>
+        <div class="legend-item" data-layer="duct">
+          <div class="legend-line" style="background:var(--util-duct);border-top:2px dashed var(--util-duct);background:none"></div>
+          Reserved Ducts
+        </div>
+      </div>
+
+      <!-- Draw Mode Banner -->
+      <div id="draw-mode-banner" class="hidden">
+        <div class="blink-dot"></div>
+        Click on the map to draw your corridor route · Double-click to finish
+      </div>
+
+      <!-- Digital Twin Panel (overlays the map in Phase 6) -->
+      <div id="twin-panel" class="hidden">
+        <div id="twin-cross-section">
+          <svg id="twin-svg" width="100%" height="100%" style="position:absolute;inset:0"></svg>
+          <!-- Drawer for element details -->
+          <div id="twin-element-drawer" class="twin-element-drawer">
+            <button class="drawer-close" id="drawer-close-btn">✕</button>
+            <div id="drawer-content"><!-- Filled by phase6 JS --></div>
+          </div>
+        </div>
+        <div id="twin-controls">
+          <button class="btn btn-secondary btn-sm" id="twin-back-to-map">⬆ Map View</button>
+          <span style="font-size:0.75rem;color:var(--text-muted);flex:1;text-align:center">
+            Underground Cross-Section · Click any element for details
+          </span>
+          <button class="btn btn-ghost btn-sm" id="twin-toggle-view">🗺️ Switch to Map</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- RIGHT: Phase Panel -->
+    <div id="phase-panel">
+
+      <!-- ── Phase 1: Create Corridor ── -->
+      <div id="phase-1" class="phase-pane hidden">
+        <div class="phase-header">
+          <div class="phase-number">Phase 1 of 6</div>
+          <h2 class="phase-title">Create Corridor</h2>
+          <p class="phase-desc">Tell UtilitySync about the road and its existing underground utilities.</p>
+        </div>
+        <div class="phase-body">
+          <form id="corridor-form" novalidate>
+            <div class="flex flex-col gap-3">
+
+              <div class="form-group">
+                <label class="form-label" for="road-name">Road / Corridor Name</label>
+                <input id="road-name" class="form-input" type="text"
+                       placeholder="e.g. High Street, Greenway" value="High Street, Greenway" />
+              </div>
+
+              <div class="form-group">
+                <label class="form-label" for="location">Location</label>
+                <input id="location" class="form-input" type="text"
+                       placeholder="Borough, City" value="Elephant & Castle to Waterloo, London SE1" />
+              </div>
+
+              <div class="form-row">
+                <div class="form-group">
+                  <label class="form-label" for="length-km">Length (km)</label>
+                  <input id="length-km" class="form-input" type="number"
+                         min="0.1" step="0.1" value="2.3" placeholder="2.3" />
+                </div>
+                <div class="form-group">
+                  <label class="form-label" for="width-m">Width (m)</label>
+                  <input id="width-m" class="form-input" type="number"
+                         min="3" max="50" value="15" placeholder="15" />
+                </div>
+              </div>
+
+              <div class="form-group">
+                <label class="form-label" for="road-type">Road Classification</label>
+                <select id="road-type" class="form-select">
+                  <option value="A_ROAD">A Road (Primary)</option>
+                  <option value="B_ROAD" selected>B Road (Secondary)</option>
+                  <option value="LOCAL">Local Road</option>
+                  <option value="PEDESTRIAN">Pedestrian / Footway</option>
+                </select>
+              </div>
+
+              <div class="form-group">
+                <label class="form-label">Existing Utilities</label>
+                <p class="form-hint" style="margin-bottom:8px">Select all that currently exist in this corridor</p>
+                <div class="checkbox-group" id="utility-checkboxes">
+                  <label class="checkbox-pill" data-util="electricity" style="--c:var(--util-electricity)">
+                    <input type="checkbox" value="electricity" checked />
+                    <div class="dot"></div> ⚡ Electricity
+                  </label>
+                  <label class="checkbox-pill" data-util="water" style="--c:var(--util-water)">
+                    <input type="checkbox" value="water" checked />
+                    <div class="dot"></div> 💧 Water
+                  </label>
+                  <label class="checkbox-pill" data-util="fiber" style="--c:var(--util-fiber)">
+                    <input type="checkbox" value="fiber" />
+                    <div class="dot"></div> 🔮 Fiber
+                  </label>
+                  <label class="checkbox-pill" data-util="gas" style="--c:var(--util-gas)">
+                    <input type="checkbox" value="gas" checked />
+                    <div class="dot"></div> 🔥 Gas
+                  </label>
+                  <label class="checkbox-pill" data-util="drainage" style="--c:var(--util-drainage)">
+                    <input type="checkbox" value="drainage" checked />
+                    <div class="dot"></div> 🌊 Drainage
+                  </label>
+                </div>
+              </div>
+
+              <div class="form-group">
+                <label class="form-label">Route Selection</label>
+                <p class="form-hint" style="margin-bottom:8px">
+                  Use the map to draw the corridor route, or load the demo corridor.
+                </p>
+                <div style="display:flex;gap:8px">
+                  <button type="button" id="btn-draw-route" class="btn btn-secondary btn-sm flex-1">
+                    ✏️ Draw on Map
+                  </button>
+                  <button type="button" id="btn-load-demo" class="btn btn-ghost btn-sm">
+                    🗺️ Load Demo
+                  </button>
+                </div>
+                <div id="route-status" style="margin-top:6px;font-size:0.75rem;color:var(--text-muted)">
+                  No route drawn
+                </div>
+              </div>
+
+              <div class="form-group">
+                <label class="form-label" for="corridor-notes">Additional Notes</label>
+                <textarea id="corridor-notes" class="form-textarea"
+                          placeholder="Known constraints, heritage restrictions, traffic sensitivity..."></textarea>
+              </div>
+
+            </div>
+          </form>
+        </div>
+        <div class="phase-footer">
+          <button id="btn-create-corridor" class="btn btn-primary btn-full">
+            Create Corridor & Visualize →
+          </button>
+        </div>
+      </div>
+
+      <!-- ── Phase 2: Analyze Corridor ── -->
+      <div id="phase-2" class="phase-pane hidden">
+        <div class="phase-header">
+          <div class="phase-number">Phase 2 of 6</div>
+          <h2 class="phase-title">Analyze Corridor</h2>
+          <p class="phase-desc">Review existing utilities and run a conflict and capacity analysis.</p>
+        </div>
+        <div class="phase-body" id="phase2-body">
+
+          <!-- Utility Summary (before analysis) -->
+          <div id="utility-summary">
+            <div class="card-title" style="margin-bottom:10px">Existing Utilities</div>
+            <div id="utility-list"><!-- Filled by phase2 JS --></div>
+            <div class="divider"></div>
+            <p style="font-size:0.8rem;color:var(--text-secondary);line-height:1.6">
+              Click any utility in the list or on the map to view its details.
+              Toggle layers using the map legend.
+            </p>
+          </div>
+
+          <!-- Analysis Loading State -->
+          <div id="analysis-loading" class="hidden" style="padding:24px 0">
+            <div style="text-align:center;margin-bottom:16px">
+              <div class="spinner" style="margin:0 auto 12px;width:32px;height:32px;border-width:3px"></div>
+              <div style="font-weight:600;margin-bottom:4px">Analyzing Corridor...</div>
+              <div style="font-size:0.8rem;color:var(--text-muted)" id="analysis-step-label">Checking utility separations</div>
+            </div>
+            <div class="loading-bar">
+              <div class="loading-bar-fill" id="analysis-progress" style="width:0%"></div>
+            </div>
+          </div>
+
+          <!-- Analysis Results -->
+          <div id="analysis-results" class="hidden">
+
+            <div class="analysis-section">
+              <div class="analysis-section-title">
+                <span>⚠️</span> Conflicts Detected
+                <span id="conflict-count" class="badge badge-danger" style="margin-left:auto">0</span>
+              </div>
+              <div id="conflict-list"><!-- Filled by JS --></div>
+            </div>
+
+            <div class="analysis-section">
+              <div class="analysis-section-title">
+                <span>📊</span> Capacity Overview
+              </div>
+              <div id="capacity-list"><!-- Filled by JS --></div>
+            </div>
+
+            <div class="analysis-section">
+              <div class="analysis-section-title">
+                <span style="color:var(--util-duct)">🔵</span>
+                Recommended Reserved Ducts
+              </div>
+              <div id="duct-recommendations"><!-- Filled by JS --></div>
+            </div>
+
+          </div>
+        </div>
+        <div class="phase-footer" id="phase2-footer">
+          <button id="btn-analyze" class="btn btn-primary btn-full">
+            🔍 Analyze Corridor
+          </button>
+          <button id="btn-go-plan" class="btn btn-secondary btn-full hidden" style="margin-top:8px">
+            Plan New Utility →
+          </button>
+        </div>
+      </div>
+
+      <!-- ── Phase 3: Plan New Utility ── -->
+      <div id="phase-3" class="phase-pane hidden">
+        <div class="phase-header">
+          <div class="phase-number">Phase 3 of 6</div>
+          <h2 class="phase-title">Plan New Utility</h2>
+          <p class="phase-desc">Specify the utility you want to add to this corridor.</p>
+        </div>
+        <div class="phase-body">
+          <form id="utility-form" novalidate>
+            <div class="flex flex-col gap-3">
+
+              <div class="form-group">
+                <label class="form-label" for="util-type">Utility Type</label>
+                <select id="util-type" class="form-select">
+                  <option value="fiber" selected>🔮 Fiber Optic Cable</option>
+                  <option value="electricity">⚡ Electricity Cable</option>
+                  <option value="water">💧 Water Main</option>
+                  <option value="gas">🔥 Gas Main</option>
+                  <option value="drainage">🌊 Drainage / Sewer</option>
+                  <option value="ev_charging">🔌 EV Charging Duct</option>
+                  <option value="district_heating">♨️ District Heating</option>
+                </select>
+              </div>
+
+              <div class="form-row">
+                <div class="form-group">
+                  <label class="form-label" for="util-length">Length (m)</label>
+                  <input id="util-length" class="form-input" type="number"
+                         min="10" value="2300" placeholder="2300" />
+                </div>
+                <div class="form-group">
+                  <label class="form-label" for="util-size">Cable/Pipe Size</label>
+                  <input id="util-size" class="form-input" type="text"
+                         value="96-core SMF" placeholder="e.g. 96-core, 300mm" />
+                </div>
+              </div>
+
+              <div class="form-group">
+                <label class="form-label" for="install-method">Installation Method</label>
+                <select id="install-method" class="form-select">
+                  <option value="open_cut">Open Cut (Trench)</option>
+                  <option value="hdd" selected>Horizontal Directional Drilling (HDD)</option>
+                  <option value="existing_duct">Through Existing Duct</option>
+                  <option value="microtrenching">Micro-Trenching</option>
+                  <option value="moling">Moling / Pipe Bursting</option>
+                </select>
+              </div>
+
+              <div class="form-row">
+                <div class="form-group">
+                  <label class="form-label" for="num-bends">Number of Bends</label>
+                  <input id="num-bends" class="form-input" type="number"
+                         min="0" value="12" placeholder="0" />
+                </div>
+                <div class="form-group">
+                  <label class="form-label" for="road-crossings">Road Crossings</label>
+                  <input id="road-crossings" class="form-input" type="number"
+                         min="0" value="3" placeholder="0" />
+                </div>
+              </div>
+
+              <div class="form-group">
+                <label class="form-label" for="target-depth">Target Depth (m)</label>
+                <input id="target-depth" class="form-input" type="number"
+                       min="0.3" step="0.1" value="0.6" placeholder="0.6" />
+              </div>
+
+              <div class="form-group">
+                <label class="form-label" for="util-constraints">Project Constraints</label>
+                <textarea id="util-constraints" class="form-textarea"
+                          placeholder="e.g. No disruption to gas main zone, works during night hours only, heritage area restrictions...">No disruption permitted within 3m of gas main. Night works only on main carriageway sections.</textarea>
+              </div>
+
+              <div class="form-group">
+                <label class="form-label" for="project-timeline">Target Timeline</label>
+                <select id="project-timeline" class="form-select">
+                  <option value="asap">As Soon As Possible</option>
+                  <option value="3m" selected>Within 3 months</option>
+                  <option value="6m">Within 6 months</option>
+                  <option value="12m">Within 12 months</option>
+                </select>
+              </div>
+
+            </div>
+          </form>
+        </div>
+        <div class="phase-footer">
+          <button id="btn-generate-plan" class="btn btn-primary btn-full">
+            🤖 Generate Construction Plan →
+          </button>
+        </div>
+      </div>
+
+      <!-- ── Phase 4: Construction Plan ── -->
+      <div id="phase-4" class="phase-pane hidden">
+        <div class="phase-header">
+          <div class="phase-number">Phase 4 of 6</div>
+          <h2 class="phase-title">Construction Plan</h2>
+          <p class="phase-desc">AI-generated plan covering equipment, crew, sequence, risks and readiness.</p>
+        </div>
+        <div class="phase-body">
+
+          <!-- Loading -->
+          <div id="plan-loading" style="padding:32px 0;text-align:center">
+            <div class="spinner" style="margin:0 auto 16px;width:36px;height:36px;border-width:3px"></div>
+            <div style="font-weight:600;margin-bottom:4px">Generating Construction Plan</div>
+            <div style="font-size:0.78rem;color:var(--text-muted)" id="plan-step-label">Analyzing project requirements...</div>
+          </div>
+
+          <!-- Plan Content -->
+          <div id="plan-content" class="hidden">
+
+            <!-- Project Summary -->
+            <div class="card" style="margin-bottom:14px">
+              <div class="card-title" style="margin-bottom:10px">Project Summary</div>
+              <div id="plan-summary"><!-- Filled by JS --></div>
+            </div>
+
+            <!-- Accordion Sections -->
+            <div id="plan-sections"><!-- Filled by JS --></div>
+
+          </div>
+        </div>
+        <div class="phase-footer" id="phase4-footer">
+          <button id="btn-check-contractors" class="btn btn-primary btn-full hidden">
+            👷 Check Contractor Readiness →
+          </button>
+        </div>
+      </div>
+
+      <!-- ── Phase 5: Contractor Readiness ── -->
+      <div id="phase-5" class="phase-pane hidden">
+        <div class="phase-header">
+          <div class="phase-number">Phase 5 of 6</div>
+          <h2 class="phase-title">Contractor Readiness</h2>
+          <p class="phase-desc">See exactly which contractors can execute this project and why.</p>
+        </div>
+        <div class="phase-body">
+          <div id="contractor-loading" style="padding:32px 0;text-align:center">
+            <div class="spinner" style="margin:0 auto 16px;width:36px;height:36px;border-width:3px"></div>
+            <div style="font-weight:600;margin-bottom:4px">Matching Contractors</div>
+            <div style="font-size:0.78rem;color:var(--text-muted)">Comparing project requirements against capabilities...</div>
+          </div>
+          <div id="contractor-list" class="hidden"><!-- Filled by JS --></div>
+        </div>
+        <div class="phase-footer">
+          <button id="btn-open-twin" class="btn btn-primary btn-full hidden">
+            🌐 Open Digital Twin →
+          </button>
+        </div>
+      </div>
+
+      <!-- ── Phase 6: Digital Twin ── -->
+      <div id="phase-6" class="phase-pane hidden">
+        <div class="phase-header">
+          <div class="phase-number">Phase 6 of 6</div>
+          <h2 class="phase-title">Digital Twin</h2>
+          <p class="phase-desc">Live record of what's underground. Simulate future projects to check reusability.</p>
+        </div>
+        <div class="phase-body">
+
+          <!-- Twin Stats -->
+          <div id="twin-stats" style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:8px;margin-bottom:16px">
+            <div class="card" style="padding:12px;text-align:center">
+              <div style="font-size:1.4rem;font-weight:800;font-family:var(--font-mono);color:var(--teal)" id="twin-stat-elements">8</div>
+              <div style="font-size:0.7rem;color:var(--text-muted)">Elements</div>
+            </div>
+            <div class="card" style="padding:12px;text-align:center">
+              <div style="font-size:1.4rem;font-weight:800;font-family:var(--font-mono);color:var(--util-duct)" id="twin-stat-ducts">3</div>
+              <div style="font-size:0.7rem;color:var(--text-muted)">Reserved Ducts</div>
+            </div>
+            <div class="card" style="padding:12px;text-align:center">
+              <div style="font-size:1.4rem;font-weight:800;font-family:var(--font-mono);color:var(--success)" id="twin-stat-score">87</div>
+              <div style="font-size:0.7rem;color:var(--text-muted)">Future Score</div>
+            </div>
+          </div>
+
+          <!-- Twin Element List -->
+          <div class="card-title" style="margin-bottom:10px">All Elements</div>
+          <div id="twin-element-list"><!-- Filled by JS --></div>
+
+          <div class="divider"></div>
+
+          <!-- Future Project Simulation -->
+          <div class="analysis-section-title" style="margin-bottom:12px">
+            <span>🚀</span> Simulate Future Project
+          </div>
+          <div class="card" style="padding:14px">
+            <div class="flex flex-col gap-3">
+              <div class="form-group">
+                <label class="form-label" for="sim-util-type">Future Utility Type</label>
+                <select id="sim-util-type" class="form-select">
+                  <option value="fiber" selected>🔮 Fiber / Broadband</option>
+                  <option value="electricity">⚡ New Power Circuit</option>
+                  <option value="ev_charging">🔌 EV Charging</option>
+                  <option value="district_heating">♨️ District Heating</option>
+                  <option value="water">💧 New Water Main</option>
+                </select>
+              </div>
+              <div class="form-group">
+                <label class="form-label" for="sim-length">Required Length (m)</label>
+                <input id="sim-length" class="form-input" type="number" value="2300" />
+              </div>
+              <button id="btn-simulate" class="btn btn-primary btn-full">
+                🤖 Check Existing Capacity
+              </button>
+            </div>
+          </div>
+
+          <!-- Simulation Result -->
+          <div id="sim-result" class="hidden"></div>
+
+        </div>
+        <div class="phase-footer">
+          <div style="font-size:0.75rem;color:var(--text-muted);text-align:center">
+            ✅ Full corridor planning workflow complete. This twin will be used for all future projects on this corridor.
+          </div>
+        </div>
+      </div>
+
+    </div><!-- /phase-panel -->
+  </div><!-- /app-body -->
+</div><!-- /main-app -->
+
+<!-- ═══════════════════════════════════════════════════════
+     AI ASSISTANT PANEL
+═══════════════════════════════════════════════════════ -->
+<div id="ai-assistant">
+  <div class="ai-header">
+    <div class="ai-avatar">🤖</div>
+    <div class="ai-header-info">
+      <div class="ai-header-name">UtilitySync AI</div>
+      <div class="ai-header-sub">
+        <div class="ai-pulse" style="width:6px;height:6px"></div>
+        Powered by Amazon Bedrock · Claude 3.5 Sonnet
+      </div>
+    </div>
+    <button class="ai-header-close" id="ai-close-btn">✕</button>
+  </div>
+  <div id="ai-messages" class="ai-messages">
+    <!-- Messages injected by JS -->
+  </div>
+  <div id="ai-suggestions" class="ai-suggestions">
+    <!-- Suggestions injected by JS -->
+  </div>
+  <div class="ai-input-row">
+    <input id="ai-input" type="text"
+           placeholder="Ask about the corridor, plan, or contractor..." />
+    <button id="ai-send-btn">→</button>
+  </div>
+</div>
+
+<!-- Toast Container -->
+<div id="toast-container"></div>
+
+<!-- ═══════════════════════════════════════════════════════
+     SCRIPTS — load order matters
+═══════════════════════════════════════════════════════ -->
+<script src="vendor/leaflet/leaflet.js"></script>
+<script>
+  if (typeof L === 'undefined') {
+    document.write('<script src="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.js"><\/script>');
+  }
+</script>
+
+<script src="js/config.js"></script>
+<script src="js/data/mock-data.js"></script>
+<script src="js/app.js"></script>
+<script src="js/map.js"></script>
+<script src="js/api.js"></script>
+<script src="js/phases/phase0-landing.js"></script>
+<script src="js/phases/phase1-create.js"></script>
+<script src="js/phases/phase2-analyze.js"></script>
+<script src="js/phases/phase3-utility.js"></script>
+<script src="js/phases/phase4-construction.js"></script>
+<script src="js/phases/phase5-contractor.js"></script>
+<script src="js/phases/phase6-digital-twin.js"></script>
+<script src="js/ai-assistant.js"></script>
+
+</body>
+</html>

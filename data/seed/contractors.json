@@ -1,0 +1,157 @@
+{
+  "contractors": [
+    {
+      "contractorId": "ctr-001",
+      "name": "BuildCore Infrastructure Ltd",
+      "location": "Croydon, London",
+      "established": 2008,
+      "employees": 85,
+      "matchScore": 42,
+      "equipment": [
+        { "name": "Hydraulic Excavators (Cat 308)", "count": 4, "owned": true },
+        { "name": "Compactor Plates", "count": 6, "owned": true },
+        { "name": "Cable Drums (up to 1500kg)", "count": 3, "owned": true },
+        { "name": "Traffic Management Vehicles", "count": 2, "owned": true },
+        { "name": "Pipe Layer / Bedding Equipment", "count": 2, "owned": true },
+        { "name": "Vacuum Excavator (Vac-Ex)", "count": 1, "owned": false, "note": "Hired" }
+      ],
+      "certifications": [
+        { "name": "NRSWA (Streetworks)", "status": "VALID", "expiry": "2026-08" },
+        { "name": "Gas Proximity Work", "status": "VALID", "expiry": "2025-11" },
+        { "name": "ISO 9001 Quality", "status": "VALID", "expiry": "2026-03" }
+      ],
+      "crewTypes": [
+        { "type": "Civil Operatives (NRSWA)", "count": 22 },
+        { "type": "Plant Operators", "count": 8 },
+        { "type": "Traffic Management", "count": 6 },
+        { "type": "Site Supervisors", "count": 4 }
+      ],
+      "previousProjects": [
+        "Water main replacement, Lewisham (800m, 2023)",
+        "Gas service connections, Brixton (2022)",
+        "Road reinstatement, A205 (2021)"
+      ],
+      "gaps": [
+        {
+          "requirement": "Horizontal Directional Drilling (HDD) Rig",
+          "severity": "CRITICAL",
+          "reason": "Required for 3 road crossings (45m total). Open-cut not permitted under primary road.",
+          "mitigation": "Could sub-contract HDD works to specialist"
+        },
+        {
+          "requirement": "Cable Pulling Winch (fiber-rated)",
+          "severity": "CRITICAL",
+          "reason": "Required for 96-core fiber cable installation in ducted sections.",
+          "mitigation": "Not available in fleet. Must hire or partner."
+        },
+        {
+          "requirement": "City & Guilds Fiber Optic Splicing Certification",
+          "severity": "HIGH",
+          "reason": "No certified fiber splicers in permanent crew.",
+          "mitigation": "Could sub-contract splicing to specialist"
+        }
+      ]
+    },
+    {
+      "contractorId": "ctr-002",
+      "name": "TerraFlow Solutions Ltd",
+      "location": "Bermondsey, London",
+      "established": 2014,
+      "employees": 120,
+      "matchScore": 94,
+      "equipment": [
+        { "name": "Horizontal Directional Drill (Vermeer D23x30)", "count": 2, "owned": true },
+        { "name": "Cable Pulling Winch (fiber-rated, 5T)", "count": 2, "owned": true },
+        { "name": "Hydraulic Excavators (Cat 308/313)", "count": 5, "owned": true },
+        { "name": "Vacuum Excavators (SUMO 3000)", "count": 3, "owned": true },
+        { "name": "Cable Blowing Unit (Plumettaz)", "count": 1, "owned": true },
+        { "name": "Compactor Plates + Rollers", "count": 8, "owned": true },
+        { "name": "OTDR Fiber Testing Equipment", "count": 2, "owned": true },
+        { "name": "Traffic Management Fleet", "count": 4, "owned": true }
+      ],
+      "certifications": [
+        { "name": "NRSWA (Streetworks)", "status": "VALID", "expiry": "2027-02" },
+        { "name": "Gas Proximity Work", "status": "VALID", "expiry": "2026-09" },
+        { "name": "City & Guilds Fiber Optic (Installation + Splicing)", "status": "VALID", "expiry": "2026-06" },
+        { "name": "Confined Space Entry", "status": "VALID", "expiry": "2025-12" },
+        { "name": "HDD Operator Certification (IADC)", "status": "VALID", "expiry": "2026-01" },
+        { "name": "ISO 9001 + ISO 14001", "status": "VALID", "expiry": "2026-07" }
+      ],
+      "crewTypes": [
+        { "type": "Civil Operatives (NRSWA)", "count": 30 },
+        { "type": "HDD Operators", "count": 4 },
+        { "type": "Fiber Optic Splicers", "count": 6 },
+        { "type": "Plant Operators", "count": 10 },
+        { "type": "Traffic Management", "count": 8 },
+        { "type": "Site Engineers", "count": 5 }
+      ],
+      "previousProjects": [
+        "Fiber duct installation, TfL Cable Route E3 (4.2km, 2024)",
+        "HDD crossings under Thames, Canary Wharf (2023)",
+        "Multi-utility corridor, Southwark (1.8km, 2022)",
+        "Fiber rollout Phase 2, BT Openreach, SE London (2021)"
+      ],
+      "gaps": [
+        {
+          "requirement": "EV Charging Infrastructure Experience",
+          "severity": "LOW",
+          "reason": "Project scope includes 4 EV charging duct provisions. TerraFlow has no direct EV experience.",
+          "mitigation": "Standard civils work — no specialist equipment needed. Minor gap."
+        }
+      ]
+    },
+    {
+      "contractorId": "ctr-003",
+      "name": "UnitedDig Services",
+      "location": "Streatham, London",
+      "established": 2017,
+      "employees": 45,
+      "matchScore": 58,
+      "equipment": [
+        { "name": "Hydraulic Excavators (JCB 8030)", "count": 3, "owned": true },
+        { "name": "Cable Drums (up to 800kg)", "count": 2, "owned": true },
+        { "name": "Compactor Plates", "count": 4, "owned": true },
+        { "name": "Pipe Layers", "count": 1, "owned": true }
+      ],
+      "certifications": [
+        { "name": "NRSWA (Streetworks)", "status": "VALID", "expiry": "2025-10" },
+        { "name": "ISO 9001 Quality", "status": "EXPIRING SOON", "expiry": "2025-11" }
+      ],
+      "crewTypes": [
+        { "type": "Civil Operatives (NRSWA)", "count": 14 },
+        { "type": "Plant Operators", "count": 5 },
+        { "type": "Traffic Management", "count": 3 }
+      ],
+      "previousProjects": [
+        "Water service connections, Herne Hill (2024)",
+        "Footway reinstatement, Streatham High Road (2023)"
+      ],
+      "gaps": [
+        {
+          "requirement": "Horizontal Directional Drilling (HDD) Rig",
+          "severity": "CRITICAL",
+          "reason": "Required for 3 road crossings under the primary road. No HDD capability.",
+          "mitigation": "Would require full sub-contract for HDD sections."
+        },
+        {
+          "requirement": "Cable Pulling Winch (fiber-rated)",
+          "severity": "CRITICAL",
+          "reason": "Existing cable drums rated to 800kg — insufficient for 96-core fiber reel weight.",
+          "mitigation": "Equipment hire required."
+        },
+        {
+          "requirement": "City & Guilds Fiber Optic Splicing",
+          "severity": "HIGH",
+          "reason": "No fiber-certified crew.",
+          "mitigation": "Sub-contract splicing."
+        },
+        {
+          "requirement": "Vacuum Excavator",
+          "severity": "MEDIUM",
+          "reason": "Required for safe excavation near existing gas main.",
+          "mitigation": "Available for hire locally."
+        }
+      ]
+    }
+  ]
+}
