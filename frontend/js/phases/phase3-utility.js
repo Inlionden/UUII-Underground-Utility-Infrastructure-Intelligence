@@ -8,11 +8,12 @@
     if (generateBtn) {
       generateBtn.addEventListener('click', handleGeneratePlan);
     }
+    syncLengthFromRoute();
   });
 
   async function handleGeneratePlan() {
     const utilType     = document.getElementById('util-type').value;
-    const lengthM      = parseInt(document.getElementById('util-length').value) || 2300;
+    const lengthM      = getRouteLengthM();
     const pipeSize     = document.getElementById('util-size').value.trim();
     const installMethod= document.getElementById('install-method').value;
     const bends        = parseInt(document.getElementById('num-bends').value) || 0;
@@ -27,7 +28,7 @@
 
     try {
       const projectData = {
-        corridorId:    AppState.corridor ? AppState.corridor.corridorId : 'corr-001',
+        corridorId:    AppState.corridor ? AppState.corridor.corridorId : window.US_CONFIG.DEFAULT_CORRIDOR_ID,
         utilityType:   utilType,
         lengthM,
         pipeSize,
@@ -54,6 +55,20 @@
       btn.disabled = false;
       btn.innerHTML = '🤖 Generate Construction Plan →';
     }
+  }
+
+  function getRouteLengthM() {
+    const drawn = window.MapManager && MapManager.getDrawnRoute && MapManager.getDrawnRoute();
+    if (drawn && MapManager.getRouteDistanceKm) return Math.round(MapManager.getRouteDistanceKm(drawn) * 1000);
+    if (AppState.corridor && Number(AppState.corridor.lengthM)) return Number(AppState.corridor.lengthM);
+    return parseInt(document.getElementById('util-length').value, 10) || 0;
+  }
+
+  function syncLengthFromRoute() {
+    const input = document.getElementById('util-length');
+    if (!input) return;
+    const lengthM = getRouteLengthM();
+    if (lengthM > 0) input.value = lengthM;
   }
 
 })();

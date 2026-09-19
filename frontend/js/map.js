@@ -5,12 +5,17 @@
 window.MapManager = (() => {
   let map = null;
   let corridorLayer = null;
+  let corridorAccentLayer = null;
+  let corridorOverviewLayers = [];
   let utilityLayers = {};   // { type: L.Polyline }
   let conflictMarkers = []; // L.Markers for conflicts
   let drawPoints = [];
+  let nodeMarkers = [];
   let drawPolyline = null;
   let drawMode = false;
   let hiddenLayers = new Set();
+  let undoStack = [];
+  let redoStack = [];
 
   const UTIL_COLORS = {
     electricity: '#f59e0b',
@@ -27,6 +32,12 @@ window.MapManager = (() => {
     electricity: 4, water: 5, gas: 4, drainage: 6,
     fiber: 3, reserved_duct: 3, expansion_zone: 3
   };
+
+  function esc(value) {
+    return String(value ?? '').replace(/[&<>"']/g, ch => ({
+      '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;'
+    }[ch]));
+  }
 
   // ── Initialize ───────────────────────────────────
   function init() {
@@ -59,16 +70,31 @@ window.MapManager = (() => {
     document.querySelectorAll('#layer-legend .legend-item').forEach(item => {
       item.addEventListener('click', () => {
         const layer = item.dataset.layer;
+        if (layer === 'all') {
+          hiddenLayers.clear();
+          document.querySelectorAll('#layer-legend .legend-item').forEach(i => i.classList.remove('hidden-layer'));
+          applyLayerVisibility();
+          return;
+        }
         if (hiddenLayers.has(layer)) {
           hiddenLayers.delete(layer);
           item.classList.remove('hidden-layer');
-          if (utilityLayers[layer]) utilityLayers[layer].addTo(map);
         } else {
           hiddenLayers.add(layer);
           item.classList.add('hidden-layer');
-          if (utilityLayers[layer]) map.removeLayer(utilityLayers[layer]);
         }
+        applyLayerVisibility();
       });
+    });
+  }
+
+  function applyLayerVisibility() {
+    Object.values(utilityLayers).forEach(entry => {
+      const layerType = entry.type;
+      const visibleType = layerType === 'reserved_duct' || layerType === 'expansion_zone' ? 'duct' : layerType;
+      const shouldHide = hiddenLayers.has(layerType) || hiddenLayers.has(visibleType);
+      if (shouldHide && map.hasLayer(entry.layer)) map.removeLayer(entry.layer);
+      if (!shouldHide && !map.hasLayer(entry.layer)) entry.layer.addTo(map);
     });
   }
 
@@ -77,10 +103,19 @@ window.MapManager = (() => {
     const drawBtn  = document.getElementById('tool-draw');
     const clearBtn = document.getElementById('tool-clear');
     const fitBtn   = document.getElementById('tool-fit');
+    const finishBtn = document.getElementById('tool-finish');
+    const undoBtn = document.getElementById('tool-undo');
+    const redoBtn = document.getElementById('tool-redo');
+    const deleteNodeBtn = document.getElementById('tool-delete-node');
 
     drawBtn && drawBtn.addEventListener('click', () => {
       toggleDrawMode();
     });
+
+    finishBtn && finishBtn.addEventListener('click', finishDraw);
+    undoBtn && undoBtn.addEventListener('click', undoRoute);
+    redoBtn && redoBtn.addEventListener('click', redoRoute);
+    deleteNodeBtn && deleteNodeBtn.addEventListener('click', deleteLastNode);
 
     clearBtn && clearBtn.addEventListener('click', () => {
       clearDraw();
@@ -101,12 +136,14 @@ window.MapManager = (() => {
 
     if (drawMode) {
       btn && btn.classList.add('active');
+      btn && (btn.textContent = drawPoints.length ? 'Continue' : 'Start');
       banner && banner.classList.remove('hidden');
       map.getContainer().style.cursor = 'crosshair';
       map.on('click', onMapClick);
       map.on('dblclick', finishDraw);
     } else {
       btn && btn.classList.remove('active');
+      btn && (btn.textContent = drawPoints.length ? 'Continue' : 'Start');
       banner && banner.classList.add('hidden');
       map.getContainer().style.cursor = '';
       map.off('click', onMapClick);
@@ -115,69 +152,223 @@ window.MapManager = (() => {
   }
 
   function onMapClick(e) {
+    pushHistory();
     const latlng = [e.latlng.lat, e.latlng.lng];
     drawPoints.push(latlng);
-
-    // Draw/update preview polyline
-    if (drawPolyline) map.removeLayer(drawPolyline);
-    drawPolyline = L.polyline(drawPoints, {
-      color: '#00d4aa', weight: 3, dashArray: '6,6', opacity: 0.8
-    }).addTo(map);
-
-    const status = document.getElementById('route-status');
-    if (status) status.textContent = `${drawPoints.length} waypoint${drawPoints.length !== 1 ? 's' : ''} placed — double-click to finish`;
+    renderEditableRoute(true);
   }
 
-  function finishDraw(e) {
+  function finishDraw() {
     if (drawPoints.length < 2) {
       showToast('Add at least 2 points to define a corridor route', 'warning');
       return;
     }
-    // Prevent the click that also fires from dblclick adding a point
     map.off('click', onMapClick);
-    toggleDrawMode();
-
-    if (drawPolyline) {
-      map.removeLayer(drawPolyline);
-      drawPolyline = null;
-    }
-
-    // Solid preview
-    drawPolyline = L.polyline(drawPoints, {
-      color: '#00d4aa', weight: 3, opacity: 0.9
-    }).addTo(map);
+    if (drawMode) toggleDrawMode();
+    renderEditableRoute(false);
 
     map.fitBounds(drawPolyline.getBounds(), { padding: [40, 40] });
 
     const status = document.getElementById('route-status');
     if (status) {
       status.style.color = 'var(--teal)';
-      status.textContent = `✓ Route drawn: ${drawPoints.length} waypoints`;
+      status.textContent = `✓ Route saved in form: ${drawPoints.length} nodes · ${routeDistanceKm(drawPoints).toFixed(2)} km`;
     }
-    showToast('Corridor route drawn — click "Create Corridor" to continue', 'success');
+    showToast('Corridor route ready — save the corridor to persist it', 'success');
   }
 
   function clearDraw() {
+    pushHistory();
     drawPoints = [];
     if (drawPolyline) { map.removeLayer(drawPolyline); drawPolyline = null; }
+    clearNodeMarkers();
     if (drawMode) toggleDrawMode();
+    updateRouteStatus();
+  }
+
+  function clearCorridorOverview() {
+    corridorOverviewLayers.forEach(layer => map.removeLayer(layer));
+    corridorOverviewLayers = [];
+  }
+
+  function pushHistory() {
+    undoStack.push(JSON.stringify(drawPoints));
+    undoStack = undoStack.slice(-40);
+    redoStack = [];
+  }
+
+  function undoRoute() {
+    if (!undoStack.length) return;
+    redoStack.push(JSON.stringify(drawPoints));
+    drawPoints = JSON.parse(undoStack.pop() || '[]');
+    renderEditableRoute(drawMode);
+  }
+
+  function redoRoute() {
+    if (!redoStack.length) return;
+    undoStack.push(JSON.stringify(drawPoints));
+    drawPoints = JSON.parse(redoStack.pop() || '[]');
+    renderEditableRoute(drawMode);
+  }
+
+  function deleteLastNode() {
+    if (!drawPoints.length) return;
+    pushHistory();
+    drawPoints.pop();
+    renderEditableRoute(drawMode);
+  }
+
+  function clearNodeMarkers() {
+    nodeMarkers.forEach(marker => map.removeLayer(marker));
+    nodeMarkers = [];
+  }
+
+  function renderEditableRoute(isDashed) {
+    if (!map) return;
+    if (drawPolyline) map.removeLayer(drawPolyline);
+    clearNodeMarkers();
+    if (drawPoints.length) {
+      drawPolyline = L.polyline(drawPoints, {
+        color: '#00d4aa',
+        weight: 3,
+        dashArray: isDashed ? '6,6' : null,
+        opacity: 0.9
+      }).addTo(map);
+    }
+    drawPoints.forEach((point, index) => {
+      const isEndpoint = index === drawPoints.length - 1;
+      const marker = L.marker(point, {
+        draggable: true,
+        icon: L.divIcon({
+          className: '',
+          html: `<div class="route-node ${isEndpoint ? 'endpoint' : ''}">${index + 1}</div>`,
+          iconSize: [24, 24],
+          iconAnchor: [12, 12]
+        })
+      }).addTo(map);
+      marker.on('dragstart', pushHistory);
+      marker.on('drag', event => {
+        drawPoints[index] = [event.latlng.lat, event.latlng.lng];
+        if (drawPolyline) drawPolyline.setLatLngs(drawPoints);
+        updateRouteStatus();
+      });
+      marker.bindTooltip(`Node ${index + 1}${index === drawPoints.length - 1 ? ' · endpoint' : ''}`, { direction: 'top' });
+      nodeMarkers.push(marker);
+    });
+    updateRouteStatus();
+  }
+
+  function updateRouteStatus() {
+    const distance = routeDistanceKm(drawPoints);
+    const status = document.getElementById('route-status');
+    const mapStats = document.getElementById('route-map-stats');
+    const text = `${drawPoints.length} node${drawPoints.length === 1 ? '' : 's'} · ${distance.toFixed(2)} km${drawMode ? ' · drawing active' : ''}`;
+    if (status) status.textContent = drawPoints.length ? text : 'No route drawn';
+    if (mapStats) mapStats.textContent = text;
+    syncRouteLengthInputs(distance);
+  }
+
+  function routeDistanceKm(points) {
+    let metres = 0;
+    for (let i = 1; i < points.length; i++) {
+      metres += map ? map.distance(points[i - 1], points[i]) : 0;
+    }
+    return metres / 1000;
+  }
+
+  function syncRouteLengthInputs(distanceKm) {
+    const km = Number(distanceKm || 0);
+    const metres = Math.round(km * 1000);
+    const lengthKmInput = document.getElementById('length-km');
+    const utilLengthInput = document.getElementById('util-length');
+    const simLengthInput = document.getElementById('sim-length');
+    if (lengthKmInput && km > 0) lengthKmInput.value = km.toFixed(2);
+    if (utilLengthInput && metres > 0) utilLengthInput.value = metres;
+    if (simLengthInput && metres > 0) simLengthInput.value = metres;
   }
 
   function getDrawnRoute() {
     return drawPoints.length >= 2 ? [...drawPoints] : null;
   }
 
+  function setDrawnRoute(route) {
+    drawPoints = Array.isArray(route) ? route.map(point => [Number(point[0]), Number(point[1])]) : [];
+    undoStack = [];
+    redoStack = [];
+    renderEditableRoute(false);
+  }
+
+  // ── Bengaluru Corridor Overview ───────────────────
+  function drawAllCorridors(options = {}) {
+    if (!map || !window.US_DATA) return;
+    clearCorridorOverview();
+    const selectedId = options.selectedCorridorId || '';
+    const corridors = window.US_DATA.listCorridors();
+
+    corridors.forEach(corridor => {
+      if (!corridor.route || corridor.route.length < 2) return;
+      const isSelected = corridor.corridorId === selectedId;
+      const layer = L.polyline(corridor.route, {
+        color: isSelected ? '#00d4aa' : '#38bdf8',
+        weight: isSelected ? 7 : 5,
+        opacity: isSelected ? 0.75 : 0.45,
+        dashArray: isSelected ? null : '6,6',
+        lineCap: 'round',
+        lineJoin: 'round',
+        className: 'corridor-overview-layer'
+      }).addTo(map);
+
+      layer.bindPopup(buildCorridorPopup(corridor), { maxWidth: 320 });
+      layer.on('click', () => layer.openPopup());
+      layer.on('mouseover', () => layer.setStyle({ opacity: 0.95, weight: isSelected ? 8 : 7 }));
+      layer.on('mouseout', () => layer.setStyle({ opacity: isSelected ? 0.75 : 0.45, weight: isSelected ? 7 : 5 }));
+      layer.bindTooltip(corridor.name, { direction: 'top', sticky: true });
+      corridorOverviewLayers.push(layer);
+    });
+
+    if (options.fit && corridorOverviewLayers.length) {
+      const group = L.featureGroup(corridorOverviewLayers);
+      map.fitBounds(group.getBounds(), { padding: [60, 60] });
+    }
+  }
+
+  function buildCorridorPopup(corridor) {
+    const utilities = corridor.utilities || (window.US_DATA ? window.US_DATA.listUtilities(corridor.corridorId) : []);
+    const projects = window.US_DATA ? window.US_DATA.listProjects().filter(p => p.corridorId === corridor.corridorId) : [];
+    const alerts = window.US_DATA ? window.US_DATA.listAlerts().filter(a => a.corridorId === corridor.corridorId) : [];
+    const utilityTypes = [...new Set(utilities.map(u => u.type))].map(type => type.replace('_', ' ')).join(', ') || 'No utilities recorded';
+
+    return `
+      <div>
+        <div class="popup-title" style="color:#00d4aa">${esc(corridor.name)}</div>
+        <div class="popup-row"><span class="label">Location</span><span class="value">${esc(corridor.location || 'Bengaluru')}</span></div>
+        <div class="popup-row"><span class="label">Length</span><span class="value">${esc(corridor.lengthKm || 0)} km</span></div>
+        <div class="popup-row"><span class="label">Utilities</span><span class="value">${esc(utilityTypes)}</span></div>
+        <div class="popup-row"><span class="label">Projects</span><span class="value">${projects.length}</span></div>
+        <div class="popup-row"><span class="label">Open alerts</span><span class="value">${alerts.length}</span></div>
+        ${corridor.notes ? `<div style="margin-top:8px;font-size:0.74rem;color:rgba(255,255,255,0.62)">${esc(corridor.notes)}</div>` : ''}
+        <div style="display:flex;gap:8px;margin-top:10px;flex-wrap:wrap">
+          <button class="btn btn-primary btn-sm" onclick="window.openCorridor && window.openCorridor('${esc(corridor.corridorId)}', 2, 'corridors')">Open Workspace</button>
+          <button class="btn btn-secondary btn-sm" onclick="window.CrudUI && window.CrudUI.viewCorridor('${esc(corridor.corridorId)}')">View Details</button>
+        </div>
+      </div>`;
+  }
+
   // ── Draw Corridor ─────────────────────────────────
   function drawCorridor(corridor) {
     // Remove old corridor
     if (corridorLayer) map.removeLayer(corridorLayer);
-    Object.values(utilityLayers).forEach(l => map.removeLayer(l));
+    if (corridorAccentLayer) map.removeLayer(corridorAccentLayer);
+    clearCorridorOverview();
+    Object.values(utilityLayers).forEach(entry => map.removeLayer(entry.layer));
     utilityLayers = {};
     conflictMarkers.forEach(m => map.removeLayer(m));
     conflictMarkers = [];
 
     const route = corridor.route;
     if (!route || route.length < 2) return;
+
+    drawAllCorridors({ selectedCorridorId: corridor.corridorId });
 
     // Corridor centerline (slightly transparent)
     corridorLayer = L.polyline(route, {
@@ -186,9 +377,11 @@ window.MapManager = (() => {
       lineCap: 'round',
       lineJoin: 'round',
     }).addTo(map);
+    corridorLayer.bindPopup(buildCorridorPopup(corridor), { maxWidth: 320 });
+    corridorLayer.on('click', () => corridorLayer.openPopup());
 
     // Animated drawing effect — thin teal line on top
-    L.polyline(route, {
+    corridorAccentLayer = L.polyline(route, {
       color: '#00d4aa',
       weight: 2,
       opacity: 0.5,
@@ -201,6 +394,7 @@ window.MapManager = (() => {
         drawUtilityLayer(util, route);
       });
     }
+    applyLayerVisibility();
 
     // Fit view
     setTimeout(() => {
@@ -225,18 +419,22 @@ window.MapManager = (() => {
     });
 
     layer.bindPopup(buildUtilPopup(util));
-    layer.on('click', () => layer.openPopup());
+    layer.on('click', () => {
+      Object.values(utilityLayers).forEach(entry => entry.layer.setStyle({ opacity: 0.55, weight: UTIL_WEIGHTS[entry.type] || 3 }));
+      layer.setStyle({ opacity: 1, weight: weight + 3 });
+      layer.openPopup();
+    });
 
     if (!hiddenLayers.has(util.type)) {
       layer.addTo(map);
     }
 
-    utilityLayers[util.utilityId || util.type] = layer;
+    utilityLayers[util.utilityId || util.type] = { layer, type: util.type };
   }
 
   function offsetPolyline(route, offsetMeters) {
     // Simple geographic offset — shifts each point east/west
-    const lngOffset = offsetMeters * 0.0000089; // ~1m in lng degrees at London lat
+    const lngOffset = offsetMeters * 0.0000092; // close enough for Bengaluru latitude in this visual layer
     return route.map(([lat, lng]) => [lat, lng + lngOffset]);
   }
 
@@ -258,6 +456,7 @@ window.MapManager = (() => {
         <div class="popup-row"><span class="label">Capacity</span><span class="value" style="color:${pctColor}">${pct}%</span></div>
         ${specs}
         ${util.notes ? `<div style="margin-top:8px;font-size:0.74rem;color:rgba(255,255,255,0.5);font-style:italic">${util.notes}</div>` : ''}
+        <button class="btn btn-secondary btn-sm" style="margin-top:10px" onclick="window.CrudUI && window.CrudUI.viewUtility('${util.utilityId}')">View Details</button>
       </div>`;
   }
 
@@ -298,7 +497,7 @@ window.MapManager = (() => {
         <div style="margin-top:8px;font-size:0.78rem;color:#10b981">Potential saving: ${ductRecommendation.estimatedSaving}</div>
       </div>`);
     layer.addTo(map);
-    utilityLayers[ductRecommendation.ductId] = layer;
+    utilityLayers[ductRecommendation.ductId] = { layer, type: 'reserved_duct' };
   }
 
   // ── Fit to Corridor ───────────────────────────────
@@ -308,26 +507,22 @@ window.MapManager = (() => {
     }
   }
 
-  // ── Load Demo Route ───────────────────────────────
-  function loadDemoRoute() {
+  // ── Load Bengaluru Sample Route ───────────────────
+  function loadBengaluruRoute() {
     drawPoints = [
-      [51.4960, -0.1010],
-      [51.4975, -0.1030],
-      [51.4990, -0.1055],
-      [51.5005, -0.1080],
-      [51.5020, -0.1100],
-      [51.5034, -0.1130]
+      [12.9961, 77.6837],
+      [12.9978, 77.6958],
+      [12.9924, 77.7055],
+      [12.9879, 77.7147],
+      [12.9825, 77.7281]
     ];
-    if (drawPolyline) map.removeLayer(drawPolyline);
-    drawPolyline = L.polyline(drawPoints, {
-      color: '#00d4aa', weight: 3, opacity: 0.9
-    }).addTo(map);
+    renderEditableRoute(false);
     map.fitBounds(drawPolyline.getBounds(), { padding: [60, 60] });
 
     const status = document.getElementById('route-status');
     if (status) {
       status.style.color = 'var(--teal)';
-      status.textContent = '✓ Demo route loaded: 6 waypoints (2.3km)';
+      status.textContent = `✓ Bengaluru sample route loaded: ${drawPoints.length} waypoints · ${routeDistanceKm(drawPoints).toFixed(2)} km`;
     }
   }
 
@@ -410,7 +605,7 @@ window.MapManager = (() => {
     }
 
     // Underground label
-    html += `<text x="${midX}" y="${surfaceY - 26}" fill="rgba(255,255,255,0.4)" font-size="11" text-anchor="middle" font-family="Inter, sans-serif" letter-spacing="2">UNDERGROUND CROSS-SECTION · HIGH STREET, GREENWAY</text>`;
+    html += `<text x="${midX}" y="${surfaceY - 26}" fill="rgba(255,255,255,0.4)" font-size="11" text-anchor="middle" font-family="Inter, sans-serif" letter-spacing="2">UNDERGROUND CROSS-SECTION · ${(twinData.corridorName || 'BENGALURU CORRIDOR').toUpperCase()}</text>`;
 
     // Draw elements
     const elements = twinData.elements || [];
@@ -493,13 +688,21 @@ window.MapManager = (() => {
     addConflictMarker,
     addDuctLayer,
     fitToCorridor,
-    loadDemoRoute,
+    loadBengaluruRoute,
+    loadDemoRoute: loadBengaluruRoute,
     getDrawnRoute,
+    getRouteDistanceKm: routeDistanceKm,
+    setDrawnRoute,
     toggleDrawMode,
+    finishDraw,
+    undoRoute,
+    redoRoute,
+    deleteLastNode,
     clearDraw,
     showDigitalTwinView,
     hideTwinView,
     renderTwinSVG,
+    drawAllCorridors,
     get map() { return map; },
     UTIL_COLORS,
   };

@@ -28,7 +28,7 @@ def search_knowledge_base(query: str) -> str:
         Relevant technical information from the knowledge base.
     """
     kb_id = os.environ.get('BEDROCK_KB_ID', '')
-    model_arn = f"arn:aws:bedrock:{os.environ.get('AWS_DEFAULT_REGION', 'us-east-1')}::foundation-model/anthropic.claude-3-5-sonnet-20241022-v2:0"
+    model_arn = f"arn:aws:bedrock:{os.environ.get('AWS_DEFAULT_REGION', 'ap-south-1')}::foundation-model/anthropic.claude-3-5-sonnet-20241022-v2:0"
 
     if not kb_id or kb_id == 'PLACEHOLDER_KB_ID':
         # Fallback to static knowledge if KB not yet set up

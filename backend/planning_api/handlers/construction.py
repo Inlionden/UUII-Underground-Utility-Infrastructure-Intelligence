@@ -15,13 +15,13 @@ INSTALL_METHOD_LABELS = {
 
 UTILITY_EQUIPMENT = {
     'fiber': [
-        {'name': 'Horizontal Directional Drill (Vermeer D23x30 or equivalent)', 'qty': 1, 'critical': True,  'reason': 'Required for road crossings under carriageway where open-cut is not permitted.'},
+        {'name': 'Horizontal Directional Drill (Vermeer D23x30 or equivalent)', 'qty': 1, 'critical': True,  'reason': 'Required for road crossings where open-cut is not permitted.'},
         {'name': 'Cable Pulling / Blowing Unit (Plumettaz or similar)',          'qty': 1, 'critical': True,  'reason': 'Required for fiber cable installation through duct sections.'},
-        {'name': 'Vacuum Excavator (Vac-Ex)',                                    'qty': 2, 'critical': True,  'reason': 'Required for safe excavation within 3m of gas main.'},
+        {'name': 'Vacuum Excavator (Vac-Ex)',                                    'qty': 2, 'critical': True,  'reason': 'Required for safe exposure near congested utility bands.'},
         {'name': 'Hydraulic Excavator (3T or 8T)',                               'qty': 2, 'critical': False, 'reason': 'Open-cut trenching in footway sections.'},
         {'name': 'OTDR Fiber Testing Equipment',                                 'qty': 1, 'critical': True,  'reason': 'Mandatory — fiber continuity and loss testing at each splice point.'},
-        {'name': 'Compaction Plates / Roller',                                   'qty': 2, 'critical': False, 'reason': 'NRSWA-compliant reinstatement compaction.'},
-        {'name': 'Traffic Management Fleet (TTRO required)',                     'qty': 1, 'critical': False, 'reason': 'Full TM plan required; TTRO 3-month notice on A-road sections.'},
+        {'name': 'Compaction Plates / Roller',                                   'qty': 2, 'critical': False, 'reason': 'Road reinstatement compaction.'},
+        {'name': 'Traffic Management Fleet',                                     'qty': 1, 'critical': False, 'reason': 'Full traffic management plan required on Bengaluru arterial sections.'},
     ],
     'electricity': [
         {'name': 'Cable Pulling Equipment (HV-rated)',  'qty': 1, 'critical': True,  'reason': 'Required for HV cable installation.'},
@@ -41,21 +41,21 @@ UTILITY_EQUIPMENT = {
 
 UTILITY_CREW = {
     'fiber': [
-        {'role': 'HDD Operator (IADC certified)',                   'count': 2, 'critical': True},
-        {'role': 'Fiber Optic Splicer (City & Guilds 3667)',        'count': 3, 'critical': True},
-        {'role': 'NRSWA-qualified Civil Operatives',                'count': 6, 'critical': True},
+        {'role': 'HDD Operator',                                    'count': 2, 'critical': True},
+        {'role': 'Fiber Optic Splicer',                             'count': 3, 'critical': True},
+        {'role': 'Civil Operatives',                                'count': 6, 'critical': True},
         {'role': 'Traffic Management Operatives',                   'count': 3, 'critical': False},
         {'role': 'Site Supervisor / Safety Officer',                'count': 1, 'critical': True},
     ],
     'electricity': [
-        {'role': 'HV-qualified Jointers (DNO approved)',            'count': 2, 'critical': True},
-        {'role': 'NRSWA-qualified Civil Operatives',                'count': 6, 'critical': True},
+        {'role': 'HV-qualified Jointers',                           'count': 2, 'critical': True},
+        {'role': 'Civil Operatives',                                'count': 6, 'critical': True},
         {'role': 'Traffic Management Operatives',                   'count': 3, 'critical': False},
-        {'role': 'DNO-approved Site Supervisor',                    'count': 1, 'critical': True},
+        {'role': 'Electrical Site Supervisor',                      'count': 1, 'critical': True},
     ],
     'water': [
-        {'role': 'NRSWA-qualified Pipe Layers',                     'count': 5, 'critical': True},
-        {'role': 'NRSWA-qualified Civil Operatives',                'count': 4, 'critical': True},
+        {'role': 'Pipe Layers',                                     'count': 5, 'critical': True},
+        {'role': 'Civil Operatives',                                'count': 4, 'critical': True},
         {'role': 'Water Network Engineer',                          'count': 1, 'critical': True},
         {'role': 'Traffic Management Operatives',                   'count': 2, 'critical': False},
     ],
@@ -63,8 +63,8 @@ UTILITY_CREW = {
 
 TOP_RISKS = {
     'fiber': [
-        {'level': 'HIGH',   'risk': 'Gas Main Proximity',    'description': 'Any mechanical excavation within 3m of gas main requires daily gas survey + vacuum excavation. Fatality risk + prosecution if breached.'},
-        {'level': 'HIGH',   'risk': 'Unmapped Services',     'description': 'Victorian-era infrastructure likely incomplete in records. GPR survey mandatory before trenching.'},
+        {'level': 'HIGH',   'risk': 'Gas Main Proximity',    'description': 'Mechanical excavation near gas assets requires exposure and safe-dig controls before works.'},
+        {'level': 'HIGH',   'risk': 'Unmapped Services',     'description': 'Utility records may be incomplete. GPR survey is mandatory before trenching.'},
         {'level': 'MEDIUM', 'risk': 'HDD Deviation',        'description': 'Drills can deviate on congested routes. Pull-back and re-drill required if tolerance exceeded.'},
         {'level': 'MEDIUM', 'risk': 'Traffic Impact',       'description': 'Night works constraints significantly extend programme. Overruns incur penalty clauses.'},
         {'level': 'LOW',    'risk': 'Splice Contamination', 'description': 'Dust and moisture at splice points cause high optical loss. All splicing requires clean-tent environment.'},
@@ -84,8 +84,8 @@ def generate(project_id: str) -> dict:
     risks     = TOP_RISKS.get(util_type, TOP_RISKS['fiber'])
 
     weeks = max(3, round(length_m / 300))  # rough estimate
-    cost_lo = length_m * 75
-    cost_hi = length_m * 90
+    cost_lo = length_m * 4200
+    cost_hi = length_m * 6800
     crew_sz  = sum(c['count'] for c in crew)
 
     summary = {
@@ -94,7 +94,7 @@ def generate(project_id: str) -> dict:
         'installMethods':   INSTALL_METHOD_LABELS.get(method, method),
         'estimatedDuration': f'{weeks}–{weeks + 2} weeks',
         'estimatedCrew':    f'{crew_sz - 2}–{crew_sz + 2} operatives',
-        'estimatedCost':    f'£{cost_lo:,}–£{cost_hi:,}',
+        'estimatedCost':    f'INR {cost_lo:,}-{cost_hi:,}',
     }
 
     sequence = _build_sequence(util_type, method, crossings)
@@ -114,7 +114,7 @@ def generate(project_id: str) -> dict:
 
 def _build_sequence(util_type, method, crossings):
     base = [
-        {'step': 1, 'title': 'Pre-works and Mobilisation',    'detail': 'TTRO application, utility surveys (CAT & Genny + GPR), site set-up, safety briefing, material deliveries.'},
+        {'step': 1, 'title': 'Pre-works and Mobilisation',    'detail': 'Permit check, utility surveys, site set-up, safety briefing, material deliveries.'},
         {'step': 2, 'title': 'Vacuum Excavation — Trial Holes','detail': 'Expose existing services at critical crossing points using vacuum excavation. Confirm as-built depths.'},
     ]
     if crossings > 0 and method == 'hdd':
@@ -122,20 +122,20 @@ def _build_sequence(util_type, method, crossings):
     base += [
         {'step': len(base) + 1, 'title': 'Main Installation Works',  'detail': 'Lay utility in trench or through existing duct as per design. Bed and backfill in layers.'},
         {'step': len(base) + 2, 'title': 'Jointing and Testing',     'detail': 'Complete all joints and connections. Full pressure/continuity test to acceptance criteria.'},
-        {'step': len(base) + 3, 'title': 'Reinstatement and Handover','detail': 'Full NRSWA-compliant reinstatement. As-built survey. Digital Twin update. 2-year warranty period.'},
+        {'step': len(base) + 3, 'title': 'Reinstatement and Handover','detail': 'Road reinstatement. As-built survey. Digital Twin update. Defect-liability tracking.'},
     ]
     return base
 
 
 def _build_missing(util_type, crossings):
     items = [
-        {'status': '❌', 'item': 'TTRO / Traffic Regulation Order',      'detail': 'Critical path item — apply immediately. 3-month notice for A-road sections.'},
-        {'status': '❌', 'item': 'Ground Radar (GPR) Survey',             'detail': 'Mandatory before excavation. 2–3 week lead time.'},
-        {'status': '⚠️', 'item': 'Route Design Drawings',               'detail': 'Detailed design drawings required for NRSWA noticing and contractor tender.'},
+        {'status': 'MISSING', 'item': 'Traffic diversion plan',          'detail': 'Critical path item for Bengaluru arterial works.'},
+        {'status': 'MISSING', 'item': 'Ground Radar (GPR) Survey',       'detail': 'Mandatory before excavation. 2-3 week lead time.'},
+        {'status': 'CHECK', 'item': 'Route Design Drawings',             'detail': 'Detailed design drawings required for permits and contractor tender.'},
     ]
     if util_type == 'fiber':
-        items.append({'status': '❌', 'item': 'Cadent Gas Notification (adjacent works)', 'detail': '28-day notification to Cadent required before works within 3m of gas main.'})
+        items.append({'status': 'MISSING', 'item': 'Gas proximity permit', 'detail': 'Utility owner notification required before works near gas mains.'})
     if crossings > 0:
-        items.append({'status': '⚠️', 'item': 'HDD Bore Plan (HA approved)', 'detail': 'HDD contractor must submit bore plan for Highway Authority approval before drilling.'})
-    items.append({'status': '✅', 'item': 'Corridor Analysis', 'detail': 'Completed. Conflicts identified and documented.'})
+        items.append({'status': 'CHECK', 'item': 'HDD Bore Plan', 'detail': 'HDD contractor must submit bore plan before drilling.'})
+    items.append({'status': 'OK', 'item': 'Corridor Analysis', 'detail': 'Completed. Conflicts identified and documented.'})
     return items

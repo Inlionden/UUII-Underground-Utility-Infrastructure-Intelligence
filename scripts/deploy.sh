@@ -9,7 +9,7 @@
 
 set -e
 
-REGION="${1:-us-east-1}"
+REGION="${1:-ap-south-1}"
 STAGE="${2:-prod}"
 STACK_NAME="utilitysync-backend"
 S3_BUCKET="utilitysync-sam-artifacts-$(aws sts get-caller-identity --query Account --output text)"

@@ -1,7 +1,7 @@
 """
 Corridors handler — CRUD for corridors and their utilities.
 """
-import os, json, uuid, boto3
+import os, json, uuid, boto3, math
 from datetime import datetime, timezone
 from boto3.dynamodb.conditions import Key
 
@@ -24,17 +24,21 @@ def create(body: dict) -> dict:
     selected_utils = body.get('selectedUtils', [])
     utilities = _build_default_utilities(corridor_id, selected_utils)
 
+    route = body.get('route', [])
+    length_m = _route_length_m(route)
+
     # Store corridor
     item = {
         'corridorId': corridor_id,
         'sk': 'METADATA',
         'name': name,
         'location': body.get('location', ''),
-        'lengthKm': float(body.get('lengthKm', 0)),
+        'lengthM': length_m,
+        'lengthKm': round(length_m / 1000, 2),
         'widthM': float(body.get('widthM', 15)),
-        'roadType': body.get('roadType', 'B_ROAD'),
+        'roadType': body.get('roadType', 'ARTERIAL'),
         'notes': body.get('notes', ''),
-        'route': json.dumps(body.get('route', [])),
+        'route': json.dumps(route),
         'status': 'ACTIVE',
         'createdAt': now,
         'updatedAt': now,
@@ -98,46 +102,46 @@ def _build_default_utilities(corridor_id: str, types: list) -> list:
         'electricity': {
             'utilityId': f'util-elec-{corridor_id[:8]}',
             'type': 'electricity',
-            'label': 'HV Electricity Cable (11kV)',
+            'label': 'BESCOM 11kV Feeder',
             'depthM': 1.0, 'horizontalOffsetM': -3.5,
-            'capacityPercent': 74, 'owner': 'UK Power Networks',
-            'status': 'OPERATIONAL',
+            'capacityPercent': 74, 'owner': 'BESCOM',
+            'status': 'EXISTING',
             'specs': {'voltage': '11kV', 'cableType': 'XLPE armoured', 'diameter': '95mm'},
         },
         'water': {
             'utilityId': f'util-water-{corridor_id[:8]}',
             'type': 'water',
-            'label': 'Water Distribution Main (300mm)',
+            'label': 'BWSSB Water Distribution Main (300mm)',
             'depthM': 0.9, 'horizontalOffsetM': -1.2,
-            'capacityPercent': 61, 'owner': 'Thames Water',
-            'status': 'OPERATIONAL',
+            'capacityPercent': 61, 'owner': 'BWSSB',
+            'status': 'EXISTING',
             'specs': {'material': 'Ductile Iron', 'diameter': '300mm', 'pressure': '5.5 bar'},
         },
         'gas': {
             'utilityId': f'util-gas-{corridor_id[:8]}',
             'type': 'gas',
-            'label': 'Gas Distribution Main (IP)',
+            'label': 'GAIL Gas MDPE Main',
             'depthM': 0.75, 'horizontalOffsetM': 1.0,
-            'capacityPercent': 82, 'owner': 'Cadent Gas',
-            'status': 'OPERATIONAL',
+            'capacityPercent': 82, 'owner': 'GAIL Gas Bengaluru',
+            'status': 'EXISTING',
             'specs': {'material': 'MDPE', 'diameter': '180mm', 'pressure': '75 mbar'},
         },
         'fiber': {
             'utilityId': f'util-fiber-{corridor_id[:8]}',
             'type': 'fiber',
-            'label': 'Fiber Optic Cable',
+            'label': 'Bengaluru Fiber Duct',
             'depthM': 0.6, 'horizontalOffsetM': -5.0,
-            'capacityPercent': 45, 'owner': 'Unknown Operator',
-            'status': 'OPERATIONAL',
+            'capacityPercent': 45, 'owner': 'Bengaluru Fiber Grid',
+            'status': 'PLANNED',
             'specs': {'cores': '48-core', 'type': 'Single-mode fiber'},
         },
         'drainage': {
             'utilityId': f'util-drain-{corridor_id[:8]}',
             'type': 'drainage',
-            'label': 'Combined Sewer (600mm)',
+            'label': 'BBMP Storm Water Drain (600mm)',
             'depthM': 1.8, 'horizontalOffsetM': 3.2,
-            'capacityPercent': 44, 'owner': 'Thames Water',
-            'status': 'OPERATIONAL',
+            'capacityPercent': 44, 'owner': 'BBMP SWD',
+            'status': 'EXISTING',
             'specs': {'material': 'Vitrified Clay', 'diameter': '600mm'},
         },
     }
@@ -148,3 +152,20 @@ def _build_default_utilities(corridor_id: str, types: list) -> list:
             util = {'corridorId': corridor_id, 'installDate': now, **defaults[t]}
             result.append(util)
     return result
+
+
+def _route_length_m(route: list) -> int:
+    total = 0
+    for idx in range(1, len(route or [])):
+      total += _haversine(route[idx - 1], route[idx])
+    return round(total)
+
+
+def _haversine(a: list, b: list) -> float:
+    radius_m = 6371000
+    lat1, lng1 = math.radians(float(a[0])), math.radians(float(a[1]))
+    lat2, lng2 = math.radians(float(b[0])), math.radians(float(b[1]))
+    dlat = lat2 - lat1
+    dlng = lng2 - lng1
+    value = math.sin(dlat / 2) ** 2 + math.cos(lat1) * math.cos(lat2) * math.sin(dlng / 2) ** 2
+    return 2 * radius_m * math.atan2(math.sqrt(value), math.sqrt(1 - value))

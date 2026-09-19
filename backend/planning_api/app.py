@@ -39,6 +39,12 @@ def lambda_handler(event, context):
         elif path.startswith('/projects/') and method == 'GET' and '/construction-plan' not in path:
             result = projects.get(params['projectId'])
 
+        elif path.startswith('/projects/') and method == 'PUT':
+            result = projects.update(params['projectId'], body)
+
+        elif path.endswith('/complete') and method == 'POST':
+            result = projects.complete(params['projectId'])
+
         elif path.endswith('/construction-plan') and method == 'GET':
             result = construction.generate(params['projectId'])
 

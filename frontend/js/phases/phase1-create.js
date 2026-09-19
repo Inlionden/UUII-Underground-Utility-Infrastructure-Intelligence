@@ -6,15 +6,15 @@
 
   function init() {
     const drawBtn = document.getElementById('btn-draw-route');
-    const demoBtn = document.getElementById('btn-load-demo');
+    const bengaluruBtn = document.getElementById('btn-load-bengaluru');
     const createBtn = document.getElementById('btn-create-corridor');
 
     drawBtn && drawBtn.addEventListener('click', () => {
       MapManager.toggleDrawMode();
     });
 
-    demoBtn && demoBtn.addEventListener('click', () => {
-      MapManager.loadDemoRoute();
+    bengaluruBtn && bengaluruBtn.addEventListener('click', () => {
+      MapManager.loadBengaluruRoute();
     });
 
     createBtn && createBtn.addEventListener('click', handleCreateCorridor);
@@ -23,7 +23,10 @@
   async function handleCreateCorridor() {
     const name     = document.getElementById('road-name').value.trim();
     const location = document.getElementById('location').value.trim();
-    const lengthKm = parseFloat(document.getElementById('length-km').value) || 2.3;
+    const route = MapManager.getDrawnRoute();
+    const lengthKm = route && MapManager.getRouteDistanceKm
+      ? Number(MapManager.getRouteDistanceKm(route).toFixed(2))
+      : parseFloat(document.getElementById('length-km').value);
     const widthM   = parseFloat(document.getElementById('width-m').value) || 15;
     const roadType = document.getElementById('road-type').value;
     const notes    = document.getElementById('corridor-notes').value;
@@ -39,17 +42,9 @@
       selectedUtils.push(cb.value);
     });
 
-    if (selectedUtils.length === 0) {
-      showToast('Select at least one existing utility', 'warning');
-      return;
-    }
-
-    // Get drawn route (or fall back to demo)
-    let route = MapManager.getDrawnRoute();
     if (!route) {
-      // Auto-load demo route if none drawn
-      MapManager.loadDemoRoute();
-      route = MapManager.getDrawnRoute();
+      showToast('Draw or load a route before creating the corridor', 'warning');
+      return;
     }
 
     // Disable button, show loading
@@ -63,11 +58,12 @@
 
       // Store in state
       AppState.corridor = corridor;
+      if (typeof refreshWorkflowHeader === 'function') refreshWorkflowHeader();
 
       // Draw on map
       MapManager.drawCorridor(corridor);
 
-      showToast(`Corridor "${corridor.name}" created successfully`, 'success');
+      showToast(`Corridor "${corridor.name}" saved. Add utilities from Assets → Utilities.`, 'success');
 
       // Mark complete + advance
       completePhase(1);

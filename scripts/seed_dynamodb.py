@@ -1,9 +1,9 @@
 """
 UtilitySync — Seed DynamoDB Tables
-Seeds all tables with demo data from data/seed/ JSON files.
+Seeds all tables with deterministic Bengaluru data from data/seed/ JSON files.
 
 Usage:
-    python3 scripts/seed_dynamodb.py [--region us-east-1]
+    python3 scripts/seed_dynamodb.py [--region ap-south-1]
 """
 import json, os, sys, argparse, pathlib
 import boto3
@@ -26,7 +26,8 @@ def seed_corridors(dynamodb, region):
     table_c = dynamodb.Table('utilitysync-corridors')
     table_u = dynamodb.Table('utilitysync-utilities')
 
-    for corridor in data['corridors']:
+    for raw_corridor in data['corridors']:
+        corridor = dict(raw_corridor)
         utilities = corridor.pop('utilities', [])
         corridor_item = {
             'corridorId': corridor['corridorId'],
@@ -45,6 +46,26 @@ def seed_corridors(dynamodb, region):
             table_u.put_item(Item=decimal_encode(util_item))
             print(f"    ✅ Utility: {util.get('label', util['utilityId'])}")
 
+def seed_projects(dynamodb, region):
+    path = BASE_DIR / 'data/seed/projects.json'
+    if not path.exists():
+        print('  ⚠️  No data/seed/projects.json found; skipping projects.')
+        return
+
+    data = json.loads(path.read_text())
+    table = dynamodb.Table('utilitysync-projects')
+
+    for project in data.get('projects', []):
+        item = {
+            'projectId': project['projectId'],
+            'sk': 'METADATA',
+            **project,
+            'requirements': json.dumps(project.get('requirements', {})),
+            'dependencies': json.dumps(project.get('dependencies', [])),
+        }
+        table.put_item(Item=decimal_encode(item))
+        print(f"  ✅ Project: {project.get('name', project['projectId'])}")
+
 def seed_contractors(dynamodb, region):
     data = json.loads((BASE_DIR / 'data/seed/contractors.json').read_text())
     table = dynamodb.Table('utilitysync-contractors')
@@ -59,6 +80,9 @@ def seed_contractors(dynamodb, region):
             'certifications': json.dumps(contractor.get('certifications', [])),
             'crewTypes':      json.dumps(contractor.get('crewTypes', [])),
             'previousProjects': json.dumps(contractor.get('previousProjects', [])),
+            'methods':        json.dumps(contractor.get('methods', [])),
+            'utilityExperience': json.dumps(contractor.get('utilityExperience', [])),
+            'currentProjectAssignments': json.dumps(contractor.get('currentProjectAssignments', [])),
             'gaps':           json.dumps(contractor.get('gaps', [])),
         }
         table.put_item(Item=decimal_encode(item))
@@ -66,22 +90,23 @@ def seed_contractors(dynamodb, region):
 
 def seed_digital_twin(dynamodb, region):
     data = json.loads((BASE_DIR / 'data/seed/digital_twin.json').read_text())
-    twin = data['digitalTwin']
+    twins = data.get('digitalTwins') or [data['digitalTwin']]
     table = dynamodb.Table('utilitysync-digital-twin')
 
-    for element in twin['elements']:
-        item = {
-            'corridorId': twin['corridorId'],
-            **element,
-            'capacity': json.dumps(element.get('capacity', {})),
-            'specs':    json.dumps(element.get('specs', {})),
-        }
-        table.put_item(Item=decimal_encode(item))
-        print(f"  ✅ Twin element: {element['label']}")
+    for twin in twins:
+        for element in twin['elements']:
+            item = {
+                'corridorId': twin['corridorId'],
+                **element,
+                'capacity': json.dumps(element.get('capacity', {})),
+                'specs':    json.dumps(element.get('specs', {})),
+            }
+            table.put_item(Item=decimal_encode(item))
+            print(f"  ✅ Twin element: {element['label']}")
 
 def main():
     parser = argparse.ArgumentParser(description='Seed UtilitySync DynamoDB tables')
-    parser.add_argument('--region', default='us-east-1')
+    parser.add_argument('--region', default='ap-south-1')
     args = parser.parse_args()
 
     print(f"\n🌱 Seeding UtilitySync DynamoDB tables (region: {args.region})")
@@ -89,6 +114,9 @@ def main():
 
     print('\n📍 Corridors + Utilities...')
     seed_corridors(dynamodb, args.region)
+
+    print('\n🏗️ Projects...')
+    seed_projects(dynamodb, args.region)
 
     print('\n👷 Contractors...')
     seed_contractors(dynamodb, args.region)

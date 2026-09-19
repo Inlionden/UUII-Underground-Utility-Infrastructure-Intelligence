@@ -2,12 +2,12 @@
 Analysis handler — deterministic conflict detection and capacity analysis.
 No AI involved here: pure engineering rules (NJUG Vol 1, HSE guidance).
 """
-import os, uuid, boto3
+import os, uuid, boto3, math
 from datetime import datetime, timezone
 from boto3.dynamodb.conditions import Key
 from handlers.corridors import get as get_corridor
 
-# Minimum separation requirements (metres) — NJUG Volume 1 Table 3.1
+# Minimum separation requirements (metres) for this deterministic MVP.
 MIN_SEPARATIONS = {
     ('gas',         'electricity'): 0.50,
     ('gas',         'water'):       0.30,
@@ -35,7 +35,7 @@ def run(corridor_id: str) -> dict:
     recommended_ducts  = _recommend_ducts(utilities, corridor)
 
     total_saving = sum(
-        _parse_money(d.get('estimatedSaving', '£0'))
+        _parse_money(d.get('estimatedSaving', 'INR 0'))
         for d in recommended_ducts
     )
 
@@ -50,7 +50,7 @@ def run(corridor_id: str) -> dict:
             'totalConflicts':             len(conflicts),
             'highSeverityConflicts':      sum(1 for c in conflicts if c['severity'] == 'HIGH'),
             'reservedDuctsRecommended':   len(recommended_ducts),
-            'totalPotentialSaving':       f'£{total_saving:,}',
+            'totalPotentialSaving':       f'INR {total_saving:,}',
             'recommendation':             _overall_recommendation(conflicts, recommended_ducts),
         }
     }
@@ -64,7 +64,10 @@ def _detect_conflicts(utilities: list) -> list:
             sep = _get_min_separation(u1['type'], u2['type'])
             if sep is None:
                 continue
-            actual = abs(u1.get('depthM', 1.0) - u2.get('depthM', 1.0))
+            actual = math.sqrt(
+                (float(u1.get('depthM', 1.0)) - float(u2.get('depthM', 1.0))) ** 2
+                + (float(u1.get('horizontalOffsetM', 0)) - float(u2.get('horizontalOffsetM', 0))) ** 2
+            )
             if actual < sep:
                 conflicts.append({
                     'conflictId':     str(uuid.uuid4()),
@@ -75,7 +78,7 @@ def _detect_conflicts(utilities: list) -> list:
                     'description':    (
                         f'{u1.get("label","Utility 1")} and {u2.get("label","Utility 2")} '
                         f'are separated by only {actual:.2f}m. '
-                        f'NJUG minimum separation is {sep:.2f}m.'
+                        f'Minimum deterministic separation is {sep:.2f}m.'
                     ),
                     'affectedLength': None,
                     'solution':       _suggest_solution(u1, u2, sep, actual),
@@ -93,8 +96,8 @@ def _suggest_solution(u1, u2, required, actual) -> str:
     needed = required - actual
     return (
         f'Increase separation by {needed:.2f}m. '
-        f'Recommended: lower {u2["type"]} main by {needed:.2f}m at next planned maintenance. '
-        f'No disruption to {u1["type"]} main required.'
+        f'Recommended: update the saved depth/offset or redesign the works band before approval. '
+        f'After the asset record is changed, rerun deterministic analysis.'
     )
 
 
@@ -135,9 +138,9 @@ def _recommend_ducts(utilities: list, corridor: dict) -> list:
             'depthM':          0.6,
             'reason':          (
                 'No fiber/comms provision currently exists. Install 2 × 110mm HDPE ducts at 0.6m '
-                'during any planned works — avoids future standalone excavation cost.'
+                'during any planned works; avoids future standalone excavation cost.'
             ),
-            'estimatedSaving': '£157,000',
+            'estimatedSaving': 'INR 15,700,000',
         })
 
     # Recommend power duct if gas > 70%
@@ -152,7 +155,7 @@ def _recommend_ducts(utilities: list, corridor: dict) -> list:
                 'Install 150mm HDPE power duct for future EV charging / solar connection, '
                 'avoiding repeated excavation.'
             ),
-            'estimatedSaving': '£81,000',
+            'estimatedSaving': 'INR 8,100,000',
         })
 
     return ducts
@@ -166,6 +169,6 @@ def _overall_recommendation(conflicts: list, ducts: list) -> str:
 
 def _parse_money(s: str) -> int:
     try:
-        return int(s.replace('£', '').replace(',', '').split('–')[0])
+        return int(s.replace('INR', '').replace('₹', '').replace(',', '').split('-')[0].strip())
     except Exception:
         return 0

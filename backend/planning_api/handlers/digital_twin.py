@@ -1,7 +1,7 @@
 """
 Digital Twin handler — retrieve and simulate future projects.
 """
-import os, boto3
+import os, json, boto3
 from boto3.dynamodb.conditions import Key
 
 dynamodb = boto3.resource('dynamodb')
@@ -17,11 +17,11 @@ DUCT_COMPATIBILITY = {
     'district_heating': [],
 }
 
-# Cost savings for using existing capacity vs new installation (£/metre)
+# Cost savings for using existing capacity vs new installation (INR/metre)
 COST_SAVINGS_PER_METRE = {
-    'fiber':       78,   # vs open-cut new fiber
-    'ev_charging': 35,   # vs new power duct
-    'electricity': 55,
+    'fiber':       1800,
+    'ev_charging': 1400,
+    'electricity': 1600,
 }
 
 
@@ -30,7 +30,7 @@ def get(corridor_id: str) -> dict:
     resp = table.query(
         KeyConditionExpression=Key('corridorId').eq(corridor_id)
     )
-    elements = resp.get('Items', [])
+    elements = [_parse_element(item) for item in resp.get('Items', [])]
 
     ducts = [e for e in elements if e.get('type') == 'reserved_duct']
     score = _calculate_future_score(elements)
@@ -97,7 +97,7 @@ def _reuse_response(future_type, required_m, available_ducts, best_duct):
         ),
         'matchedElements': matched_ids,
         'savings': {
-            'cost': {'value': f'£{cost_saving:,}',    'label': 'Cost Saved'},
+            'cost': {'value': f'INR {cost_saving:,}',    'label': 'Cost Saved'},
             'time': {'value': f'{weeks_saving} Weeks', 'label': 'Programme Saved'},
             'co2':  {'value': f'{co2_saving} tonnes', 'label': 'CO₂ Avoided'},
         }
@@ -148,3 +148,14 @@ def _calculate_future_score(elements: list) -> int:
                     if e.get('type') == 'reserved_duct'
                     and e.get('capacity', {}).get('used', 1) == 0)
     return min(100, int((reserved / total) * 60 + (available / max(1, reserved)) * 40))
+
+
+def _parse_element(item: dict) -> dict:
+    parsed = dict(item)
+    for field in ['capacity', 'specs']:
+        if isinstance(parsed.get(field), str):
+            try:
+                parsed[field] = json.loads(parsed[field])
+            except Exception:
+                parsed[field] = {}
+    return parsed

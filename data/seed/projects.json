@@ -1,0 +1,333 @@
+{
+  "projects": [
+    {
+      "projectId": "proj-wfd-fiber-ring",
+      "name": "Whitefield Redundant Fiber Ring Completion",
+      "corridorId": "corr-wfd-itpl",
+      "utilityType": "fiber",
+      "installMethod": "existing_duct",
+      "status": "READY",
+      "targetDepthM": 0.72,
+      "pipeSize": "144-core SMF",
+      "bends": 4,
+      "roadCrossings": 1,
+      "timeline": "3m",
+      "constraints": "",
+      "requirements": {
+        "equipment": [
+          {
+            "category": "cable_blowing",
+            "name": "Cable blowing unit",
+            "qty": 1
+          },
+          {
+            "category": "fiber_testing",
+            "name": "OTDR fiber tester",
+            "qty": 1
+          }
+        ],
+        "certifications": [
+          "BBMP Road Cutting Permit",
+          "OFC Splicing Certification"
+        ],
+        "methods": [
+          "existing_duct"
+        ],
+        "utilityExperience": [
+          "fiber"
+        ],
+        "minWorkers": 12,
+        "crewTypes": [
+          {
+            "type": "fiber_splicer",
+            "count": 3
+          },
+          {
+            "type": "civil",
+            "count": 4
+          }
+        ]
+      },
+      "createdAt": "2026-09-08T09:00:00+05:30",
+      "lengthM": 5221
+    },
+    {
+      "projectId": "proj-orr-fiber-hdd",
+      "name": "ORR Smart Mobility Fiber HDD Package",
+      "corridorId": "corr-orr-marathahalli",
+      "utilityType": "fiber",
+      "installMethod": "hdd",
+      "status": "PLANNING",
+      "targetDepthM": 0.75,
+      "pipeSize": "288-core SMF in 3 x 110mm ducts",
+      "bends": 4,
+      "roadCrossings": 2,
+      "timeline": "6m",
+      "constraints": "Two HDD crossings; gas-water conflict band must be potholed first.",
+      "requirements": {
+        "equipment": [
+          {
+            "category": "hdd_rig",
+            "name": "HDD rig",
+            "qty": 1
+          },
+          {
+            "category": "cable_blowing",
+            "name": "Cable blowing unit",
+            "qty": 1
+          },
+          {
+            "category": "vacuum_excavator",
+            "name": "Vacuum excavator",
+            "qty": 1
+          }
+        ],
+        "certifications": [
+          "BBMP Road Cutting Permit",
+          "OFC Splicing Certification",
+          "HDD Operator Certification",
+          "Gas Proximity Work"
+        ],
+        "methods": [
+          "hdd"
+        ],
+        "utilityExperience": [
+          "fiber"
+        ],
+        "minWorkers": 24,
+        "crewTypes": [
+          {
+            "type": "hdd_operator",
+            "count": 2
+          },
+          {
+            "type": "fiber_splicer",
+            "count": 4
+          },
+          {
+            "type": "traffic",
+            "count": 4
+          }
+        ]
+      },
+      "createdAt": "2026-09-08T09:00:00+05:30",
+      "assignedContractorId": "ctr-namma-civils",
+      "lengthM": 4194
+    },
+    {
+      "projectId": "proj-ecity-power-upgrade",
+      "name": "Electronic City 33kV Feeder Civil Works",
+      "corridorId": "corr-ecity",
+      "utilityType": "electricity",
+      "installMethod": "open_cut",
+      "status": "IN_PROGRESS",
+      "targetDepthM": 1.15,
+      "pipeSize": "33kV XLPE",
+      "bends": 4,
+      "roadCrossings": 1,
+      "timeline": "3m",
+      "constraints": "",
+      "requirements": {
+        "equipment": [
+          {
+            "category": "excavator",
+            "name": "Hydraulic excavator",
+            "qty": 1
+          },
+          {
+            "category": "cable_pulling",
+            "name": "HV cable puller",
+            "qty": 1
+          }
+        ],
+        "certifications": [
+          "BESCOM Electrical Works Approval",
+          "BBMP Road Cutting Permit"
+        ],
+        "methods": [
+          "open_cut"
+        ],
+        "utilityExperience": [
+          "electricity"
+        ],
+        "minWorkers": 18,
+        "crewTypes": [
+          {
+            "type": "electrician",
+            "count": 4
+          },
+          {
+            "type": "civil",
+            "count": 6
+          }
+        ]
+      },
+      "createdAt": "2026-09-08T09:00:00+05:30",
+      "assignedContractorId": "ctr-gridworks",
+      "lengthM": 2851
+    },
+    {
+      "projectId": "proj-bell-sewer-relief",
+      "name": "Bellandur Lake Edge Storm Drain Relief",
+      "corridorId": "corr-bellandur-sarjapur",
+      "utilityType": "drainage",
+      "installMethod": "open_cut",
+      "status": "IN_PROGRESS",
+      "targetDepthM": 1.9,
+      "pipeSize": "1200mm RCC",
+      "bends": 4,
+      "roadCrossings": 1,
+      "timeline": "6m",
+      "constraints": "",
+      "requirements": {
+        "equipment": [
+          {
+            "category": "excavator",
+            "name": "Hydraulic excavator",
+            "qty": 2
+          },
+          {
+            "category": "pipe_laying",
+            "name": "Pipe laying equipment",
+            "qty": 1
+          },
+          {
+            "category": "dewatering",
+            "name": "Dewatering pump set",
+            "qty": 1
+          }
+        ],
+        "certifications": [
+          "BBMP Storm Water Drain Approval",
+          "Confined Space Entry"
+        ],
+        "methods": [
+          "open_cut"
+        ],
+        "utilityExperience": [
+          "drainage"
+        ],
+        "minWorkers": 22,
+        "crewTypes": [
+          {
+            "type": "civil",
+            "count": 10
+          },
+          {
+            "type": "safety",
+            "count": 2
+          }
+        ]
+      },
+      "createdAt": "2026-09-08T09:00:00+05:30",
+      "assignedContractorId": "ctr-cauvery-utility",
+      "dependencies": [
+        {
+          "dependencyId": "dep-bell-lake-buffer-noc",
+          "name": "Lake-buffer environmental NOC",
+          "status": "PENDING",
+          "requiredFor": "Deep excavation"
+        },
+        {
+          "dependencyId": "dep-bell-traffic-plan",
+          "name": "Sarjapur Road traffic diversion plan",
+          "status": "APPROVED",
+          "requiredFor": "Lane closure"
+        }
+      ],
+      "lengthM": 3843
+    },
+    {
+      "projectId": "proj-bell-ev-duct",
+      "name": "Sarjapur Road EV Charging Duct Proposal",
+      "corridorId": "corr-bellandur-sarjapur",
+      "utilityType": "ev_charging",
+      "installMethod": "existing_duct",
+      "status": "READY",
+      "targetDepthM": 0.95,
+      "pipeSize": "150mm power duct reuse",
+      "bends": 4,
+      "roadCrossings": 1,
+      "timeline": "3m",
+      "constraints": "Proposal tries to consume BESCOM-reserved feeder duct for EV charging.",
+      "requirements": {
+        "equipment": [
+          {
+            "category": "cable_pulling",
+            "name": "Power cable pulling winch",
+            "qty": 1
+          }
+        ],
+        "certifications": [
+          "BESCOM Electrical Works Approval",
+          "EVSE Installation Certification"
+        ],
+        "methods": [
+          "existing_duct"
+        ],
+        "utilityExperience": [
+          "electricity",
+          "ev_charging"
+        ],
+        "minWorkers": 10,
+        "crewTypes": [
+          {
+            "type": "electrician",
+            "count": 4
+          }
+        ]
+      },
+      "createdAt": "2026-09-08T09:00:00+05:30",
+      "requiredReservedAssetId": "asset-bell-power-reserve",
+      "lengthM": 3843
+    },
+    {
+      "projectId": "proj-central-water-rehab",
+      "name": "MG Road Water Main Rehabilitation",
+      "corridorId": "corr-central-mg-cubbon",
+      "utilityType": "water",
+      "installMethod": "open_cut",
+      "status": "COMPLETED",
+      "targetDepthM": 1.3,
+      "pipeSize": "300mm DI K9",
+      "bends": 4,
+      "roadCrossings": 1,
+      "timeline": "completed",
+      "constraints": "",
+      "requirements": {
+        "equipment": [
+          {
+            "category": "pipe_laying",
+            "name": "Pipe laying equipment",
+            "qty": 1
+          }
+        ],
+        "certifications": [
+          "BWSSB Water Works Approval",
+          "BBMP Road Cutting Permit"
+        ],
+        "methods": [
+          "open_cut"
+        ],
+        "utilityExperience": [
+          "water"
+        ],
+        "minWorkers": 16,
+        "crewTypes": [
+          {
+            "type": "civil",
+            "count": 8
+          },
+          {
+            "type": "plumber",
+            "count": 4
+          }
+        ]
+      },
+      "createdAt": "2026-09-08T09:00:00+05:30",
+      "assignedContractorId": "ctr-cauvery-utility",
+      "completedAt": "2026-07-05T18:30:00+05:30",
+      "lengthM": 3005
+    }
+  ]
+}

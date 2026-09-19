@@ -18,6 +18,9 @@ Globals:
         KNOWLEDGE_BUCKET:   !Ref KnowledgeBucket
         BEDROCK_KB_ID:      !Ref BedrockKBId
         BEDROCK_MODEL_ID:   "anthropic.claude-3-5-sonnet-20241022-v2:0"
+        AI_PROVIDER:        "aws"
+        AGENT_PROVIDER:     "aws"
+        AWS_ENABLED:        "true"
         AWS_ACCOUNT_ID:     !Sub "${AWS::AccountId}"
   Api:
     Cors:

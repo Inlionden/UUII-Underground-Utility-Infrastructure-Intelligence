@@ -33,7 +33,7 @@
     </p>
     <div class="landing-cta">
       <button id="start-btn" class="btn-hero">
-        Start Corridor Planning
+        Enter Platform
         <span class="arrow">→</span>
       </button>
     </div>
@@ -52,26 +52,51 @@
 ═══════════════════════════════════════════════════════ -->
 <div id="main-app" class="hidden">
 
-  <!-- ── Top Navigation ─────────────────────────── -->
+  <!-- ── Global Platform Navigation ─────────────── -->
   <nav id="top-nav">
-    <a class="nav-logo" href="#" onclick="return false;">
+    <a class="nav-logo" href="#" data-view="dashboard" aria-label="UtilitySync dashboard">
       <div class="nav-logo-icon">⚡</div>
       <span class="nav-logo-text">UtilitySync</span>
-      <span class="nav-logo-badge">Beta</span>
     </a>
 
-    <div id="stepper"><!-- Injected by stepper.js --></div>
+    <div class="nav-menu" aria-label="Primary navigation">
+      <button class="nav-link active" data-view="dashboard">Dashboard</button>
+      <button class="nav-link" data-view="corridors">Corridors</button>
+      <button class="nav-link" data-view="projects">Projects</button>
+      <div class="nav-dropdown">
+        <button class="nav-link nav-dropdown-trigger" data-assets-trigger type="button">Assets ▾</button>
+        <div class="nav-dropdown-menu" data-assets-menu>
+          <button class="nav-link" data-view="utilities">Utilities</button>
+          <button class="nav-link" data-view="contractors">Contractors</button>
+          <button class="nav-link" data-view="equipment">Equipment</button>
+          <button class="nav-link" data-view="digital-twin">Digital Twin</button>
+        </div>
+      </div>
+      <button class="nav-link" data-view="construction">Construction</button>
+      <button class="nav-link" data-view="alerts">Alerts</button>
+    </div>
 
     <div class="nav-right">
-      <button id="ai-toggle-btn" class="nav-ai-btn">
-        <div class="ai-pulse"></div>
-        🤖 AI Assistant
+      <button id="global-create-corridor" class="nav-create-btn">
+        + Create Corridor
       </button>
     </div>
   </nav>
 
-  <!-- ── App Body ───────────────────────────────── -->
-  <div class="app-body">
+  <main id="platform-page" class="platform-page" aria-live="polite"></main>
+
+  <!-- ── Corridor Workspace ─────────────────────── -->
+  <section id="workflow-shell" class="workflow-shell hidden" aria-label="Corridor workspace">
+    <div class="workspace-header">
+      <div class="workspace-title-block">
+        <div class="workspace-kicker">Corridor Workspace</div>
+        <h1 id="workspace-corridor-name">Corridor: New Corridor</h1>
+      </div>
+      <div id="stepper"><!-- Injected by app.js --></div>
+    </div>
+
+    <!-- ── App Body ───────────────────────────────── -->
+    <div class="app-body">
 
     <!-- LEFT: Map -->
     <div id="map-section">
@@ -79,14 +104,23 @@
 
       <!-- Map Toolbar -->
       <div id="map-toolbar">
-        <button class="map-tool-btn" id="tool-draw" title="Draw corridor route">✏️</button>
-        <button class="map-tool-btn" id="tool-clear" title="Clear drawing">🗑️</button>
+        <button class="map-tool-btn wide" id="tool-draw" title="Start or continue route drawing">Start</button>
+        <button class="map-tool-btn wide" id="tool-finish" title="Finish route drawing">Finish</button>
+        <button class="map-tool-btn" id="tool-undo" title="Undo last route edit">↶</button>
+        <button class="map-tool-btn" id="tool-redo" title="Redo route edit">↷</button>
+        <button class="map-tool-btn" id="tool-delete-node" title="Delete last route node">−</button>
+        <button class="map-tool-btn" id="tool-clear" title="Clear drawing">×</button>
         <button class="map-tool-btn" id="tool-fit" title="Fit corridor to view">⊡</button>
+        <div id="route-map-stats" class="route-map-stats">0 nodes · 0.00 km</div>
       </div>
 
       <!-- Layer Legend -->
       <div id="layer-legend" class="hidden">
         <div class="legend-title">Utility Layers</div>
+        <div class="legend-item" data-layer="all">
+          <div class="legend-line" style="background:rgba(255,255,255,0.55)"></div>
+          All
+        </div>
         <div class="legend-item" data-layer="electricity">
           <div class="legend-line" style="background:var(--util-electricity)"></div>
           Electricity (11kV)
@@ -156,20 +190,20 @@
               <div class="form-group">
                 <label class="form-label" for="road-name">Road / Corridor Name</label>
                 <input id="road-name" class="form-input" type="text"
-                       placeholder="e.g. High Street, Greenway" value="High Street, Greenway" />
+                       placeholder="e.g. Whitefield / ITPL Corridor" value="Whitefield / ITPL Corridor" />
               </div>
 
               <div class="form-group">
                 <label class="form-label" for="location">Location</label>
                 <input id="location" class="form-input" type="text"
-                       placeholder="Borough, City" value="Elephant & Castle to Waterloo, London SE1" />
+                       placeholder="Area, Bengaluru" value="KR Puram - Hoodi - ITPL Main Road, Bengaluru" />
               </div>
 
               <div class="form-row">
                 <div class="form-group">
                   <label class="form-label" for="length-km">Length (km)</label>
                   <input id="length-km" class="form-input" type="number"
-                         min="0.1" step="0.1" value="2.3" placeholder="2.3" />
+                         min="0.1" step="0.01" readonly placeholder="Calculated from route" />
                 </div>
                 <div class="form-group">
                   <label class="form-label" for="width-m">Width (m)</label>
@@ -181,51 +215,27 @@
               <div class="form-group">
                 <label class="form-label" for="road-type">Road Classification</label>
                 <select id="road-type" class="form-select">
-                  <option value="A_ROAD">A Road (Primary)</option>
-                  <option value="B_ROAD" selected>B Road (Secondary)</option>
-                  <option value="LOCAL">Local Road</option>
-                  <option value="PEDESTRIAN">Pedestrian / Footway</option>
+                  <option value="ARTERIAL" selected>Bengaluru Arterial Road</option>
+                  <option value="URBAN_EXPRESSWAY">Outer Ring Road / Urban Expressway</option>
+                  <option value="CBD">Central Bengaluru CBD Street</option>
+                  <option value="TECH_PARK">Tech Park Access Road</option>
+                  <option value="INDUSTRIAL">Industrial Corridor Road</option>
+                  <option value="LAKE_BUFFER">Lake Buffer / Sensitive Corridor</option>
+                  <option value="LOCAL">Bengaluru Local Road</option>
                 </select>
-              </div>
-
-              <div class="form-group">
-                <label class="form-label">Existing Utilities</label>
-                <p class="form-hint" style="margin-bottom:8px">Select all that currently exist in this corridor</p>
-                <div class="checkbox-group" id="utility-checkboxes">
-                  <label class="checkbox-pill" data-util="electricity" style="--c:var(--util-electricity)">
-                    <input type="checkbox" value="electricity" checked />
-                    <div class="dot"></div> ⚡ Electricity
-                  </label>
-                  <label class="checkbox-pill" data-util="water" style="--c:var(--util-water)">
-                    <input type="checkbox" value="water" checked />
-                    <div class="dot"></div> 💧 Water
-                  </label>
-                  <label class="checkbox-pill" data-util="fiber" style="--c:var(--util-fiber)">
-                    <input type="checkbox" value="fiber" />
-                    <div class="dot"></div> 🔮 Fiber
-                  </label>
-                  <label class="checkbox-pill" data-util="gas" style="--c:var(--util-gas)">
-                    <input type="checkbox" value="gas" checked />
-                    <div class="dot"></div> 🔥 Gas
-                  </label>
-                  <label class="checkbox-pill" data-util="drainage" style="--c:var(--util-drainage)">
-                    <input type="checkbox" value="drainage" checked />
-                    <div class="dot"></div> 🌊 Drainage
-                  </label>
-                </div>
               </div>
 
               <div class="form-group">
                 <label class="form-label">Route Selection</label>
                 <p class="form-hint" style="margin-bottom:8px">
-                  Use the map to draw the corridor route, or load the demo corridor.
+                  Use the map to draw the corridor route, or load the Bengaluru sample corridor.
                 </p>
                 <div style="display:flex;gap:8px">
                   <button type="button" id="btn-draw-route" class="btn btn-secondary btn-sm flex-1">
                     ✏️ Draw on Map
                   </button>
-                  <button type="button" id="btn-load-demo" class="btn btn-ghost btn-sm">
-                    🗺️ Load Demo
+                  <button type="button" id="btn-load-bengaluru" class="btn btn-ghost btn-sm">
+                    🗺️ Load Bengaluru
                   </button>
                 </div>
                 <div id="route-status" style="margin-top:6px;font-size:0.75rem;color:var(--text-muted)">
@@ -347,7 +357,7 @@
                 <div class="form-group">
                   <label class="form-label" for="util-length">Length (m)</label>
                   <input id="util-length" class="form-input" type="number"
-                         min="10" value="2300" placeholder="2300" />
+                         min="10" readonly placeholder="Calculated from route" />
                 </div>
                 <div class="form-group">
                   <label class="form-label" for="util-size">Cable/Pipe Size</label>
@@ -417,7 +427,7 @@
         <div class="phase-header">
           <div class="phase-number">Phase 4 of 6</div>
           <h2 class="phase-title">Construction Plan</h2>
-          <p class="phase-desc">AI-generated plan covering equipment, crew, sequence, risks and readiness.</p>
+          <p class="phase-desc">Deterministic plan covering equipment, crew, sequence, risks and readiness.</p>
         </div>
         <div class="phase-body">
 
@@ -520,10 +530,10 @@
               </div>
               <div class="form-group">
                 <label class="form-label" for="sim-length">Required Length (m)</label>
-                <input id="sim-length" class="form-input" type="number" value="2300" />
+                <input id="sim-length" class="form-input" type="number" readonly placeholder="Calculated from route" />
               </div>
               <button id="btn-simulate" class="btn btn-primary btn-full">
-                🤖 Check Existing Capacity
+                Check Existing Capacity
               </button>
             </div>
           </div>
@@ -540,7 +550,8 @@
       </div>
 
     </div><!-- /phase-panel -->
-  </div><!-- /app-body -->
+    </div><!-- /app-body -->
+  </section><!-- /workflow-shell -->
 </div><!-- /main-app -->
 
 <!-- ═══════════════════════════════════════════════════════
@@ -553,7 +564,7 @@
       <div class="ai-header-name">UtilitySync AI</div>
       <div class="ai-header-sub">
         <div class="ai-pulse" style="width:6px;height:6px"></div>
-        Powered by Amazon Bedrock · Claude 3.5 Sonnet
+        Deterministic data explainer
       </div>
     </div>
     <button class="ai-header-close" id="ai-close-btn">✕</button>
@@ -586,9 +597,11 @@
 
 <script src="js/config.js"></script>
 <script src="js/data/mock-data.js"></script>
+<script src="js/data-store.js"></script>
 <script src="js/app.js"></script>
 <script src="js/map.js"></script>
 <script src="js/api.js"></script>
+<script src="js/crud-ui.js"></script>
 <script src="js/phases/phase0-landing.js"></script>
 <script src="js/phases/phase1-create.js"></script>
 <script src="js/phases/phase2-analyze.js"></script>

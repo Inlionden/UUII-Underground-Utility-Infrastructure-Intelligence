@@ -1,136 +1,1061 @@
 {
-  "digitalTwin": {
-    "corridorId": "corr-001",
-    "corridorName": "High Street, Greenway",
-    "lastUpdated": "2024-11-01T14:30:00Z",
-    "totalElements": 8,
-    "elements": [
-      {
-        "elementId": "twin-elec-001",
-        "type": "electricity",
-        "label": "HV Electricity Cable (11kV)",
-        "depthM": 1.0,
-        "horizontalOffsetM": -3.5,
-        "capacity": { "total": 100, "used": 74, "unit": "%" },
-        "owner": "UK Power Networks",
-        "installDate": "2019-06-10",
-        "lastInspection": "2024-03-15",
-        "condition": "GOOD",
-        "availableFutureCapacity": "26% headroom on eastern circuit; western circuit at 69%",
-        "specs": { "voltage": "11kV", "cableType": "XLPE armoured", "diameter": "95mm" }
-      },
-      {
-        "elementId": "twin-water-001",
-        "type": "water",
-        "label": "Water Distribution Main (300mm)",
-        "depthM": 0.9,
-        "horizontalOffsetM": -1.2,
-        "capacity": { "total": 320, "used": 196, "unit": "l/s" },
-        "owner": "Thames Water",
-        "installDate": "2011-09-22",
-        "lastInspection": "2023-09-01",
-        "condition": "FAIR",
-        "availableFutureCapacity": "124 l/s available. Approaching design life — expansion of this main not recommended.",
-        "specs": { "material": "Ductile Iron", "diameter": "300mm", "pressure": "5.5 bar" }
-      },
-      {
-        "elementId": "twin-gas-001",
-        "type": "gas",
-        "label": "Gas Distribution Main (IP)",
-        "depthM": 0.75,
-        "horizontalOffsetM": 1.0,
-        "capacity": { "total": 100, "used": 82, "unit": "%" },
-        "owner": "Cadent Gas",
-        "installDate": "2005-04-14",
-        "lastInspection": "2024-01-20",
-        "condition": "GOOD",
-        "availableFutureCapacity": "18% capacity available. High-pressure zone — 3m exclusion zone applies.",
-        "specs": { "material": "MDPE", "diameter": "180mm", "pressure": "75 mbar" }
-      },
-      {
-        "elementId": "twin-drain-001",
-        "type": "drainage",
-        "label": "Combined Sewer (600mm)",
-        "depthM": 1.8,
-        "horizontalOffsetM": 3.2,
-        "capacity": { "total": 100, "used": 44, "unit": "%" },
-        "owner": "Thames Water",
-        "installDate": "1987-01-01",
-        "lastInspection": "2023-06-10",
-        "condition": "FAIR",
-        "availableFutureCapacity": "56% available. Victorian infrastructure — new connections not recommended without survey.",
-        "specs": { "material": "Vitrified Clay", "diameter": "600mm" }
-      },
-      {
-        "elementId": "twin-duct-001",
-        "type": "reserved_duct",
-        "label": "Reserved Duct 1 — Comms/Fiber (110mm HDPE)",
-        "depthM": 0.6,
-        "horizontalOffsetM": -4.5,
-        "capacity": { "total": 2300, "used": 0, "unit": "m" },
-        "owner": "Greenway Council (Reserved)",
-        "installDate": "2023-08-15",
-        "lastInspection": "2024-11-01",
-        "condition": "NEW",
-        "availableFutureCapacity": "FULLY AVAILABLE — 2.3km empty duct, installed and reserved for future fiber/comms use. Cable blowing entry point at both ends.",
-        "reservedFor": "Future fiber/broadband installation",
-        "specs": { "material": "HDPE", "diameter": "110mm", "type": "Empty duct with draw rope" },
-        "highlight": true
-      },
-      {
-        "elementId": "twin-duct-002",
-        "type": "reserved_duct",
-        "label": "Reserved Duct 2 — Comms/Fiber (110mm HDPE)",
-        "depthM": 0.6,
-        "horizontalOffsetM": -5.2,
-        "capacity": { "total": 2300, "used": 0, "unit": "m" },
-        "owner": "Greenway Council (Reserved)",
-        "installDate": "2023-08-15",
-        "lastInspection": "2024-11-01",
-        "condition": "NEW",
-        "availableFutureCapacity": "FULLY AVAILABLE — 2.3km empty duct, installed and reserved for future fiber/comms use. Redundant to Duct 1.",
-        "reservedFor": "Future fiber/broadband installation (redundancy)",
-        "specs": { "material": "HDPE", "diameter": "110mm", "type": "Empty duct with draw rope" },
-        "highlight": true
-      },
-      {
-        "elementId": "twin-duct-003",
-        "type": "reserved_duct",
-        "label": "Reserved Duct 3 — Power (150mm HDPE)",
-        "depthM": 0.9,
-        "horizontalOffsetM": -6.0,
-        "capacity": { "total": 2300, "used": 0, "unit": "m" },
-        "owner": "Greenway Council (Reserved)",
-        "installDate": "2023-08-15",
-        "lastInspection": "2024-11-01",
-        "condition": "NEW",
-        "availableFutureCapacity": "FULLY AVAILABLE — 2.3km empty duct reserved for future power cable (EV charging, solar connection, etc.).",
-        "reservedFor": "Future power/EV charging infrastructure",
-        "specs": { "material": "HDPE", "diameter": "150mm", "type": "Empty duct with draw rope" },
-        "highlight": true
-      },
-      {
-        "elementId": "twin-duct-004",
-        "type": "expansion_zone",
-        "label": "Expansion Zone — North Footway",
-        "depthM": 0.5,
-        "horizontalOffsetM": 5.5,
-        "capacity": { "total": 100, "used": 0, "unit": "%" },
-        "owner": "Greenway Council",
-        "installDate": "2023-08-15",
-        "condition": "RESERVED",
-        "availableFutureCapacity": "1.8m wide trench zone in north footway, unexcavated. Reserved for future utility by planning condition.",
-        "reservedFor": "Future utility (TBD)",
-        "specs": { "width": "1.8m", "length": "2.3km", "type": "Reserved ground zone" }
+  "digitalTwins": [
+    {
+      "corridorId": "corr-wfd-itpl",
+      "corridorName": "Whitefield / ITPL Corridor",
+      "lastUpdated": "2026-09-19T00:00:00+05:30",
+      "totalElements": 4,
+      "futureCapacityScore": 26,
+      "elements": [
+        {
+          "elementId": "twin-util-wfd-bescom-11kv",
+          "utilityId": "util-wfd-bescom-11kv",
+          "type": "electricity",
+          "assetType": "utility",
+          "label": "BESCOM 11kV Feeder Pair",
+          "depthM": 1.05,
+          "horizontalOffsetM": -4.2,
+          "owner": "BESCOM",
+          "installDate": "2026-01-15",
+          "lifecycleState": "EXISTING",
+          "condition": "GOOD",
+          "capacity": {
+            "total": 100,
+            "used": 71,
+            "unit": "%"
+          },
+          "availableFutureCapacity": "29% headroom",
+          "specs": {
+            "voltage": "11kV",
+            "cableType": "XLPE armoured",
+            "routeLength": "5,221 m"
+          },
+          "notes": ""
+        },
+        {
+          "elementId": "twin-util-wfd-bwssb-water",
+          "utilityId": "util-wfd-bwssb-water",
+          "type": "water",
+          "assetType": "utility",
+          "label": "BWSSB Distribution Main 300mm",
+          "depthM": 1.25,
+          "horizontalOffsetM": -1.4,
+          "owner": "BWSSB",
+          "installDate": "2026-01-15",
+          "lifecycleState": "EXISTING",
+          "condition": "GOOD",
+          "capacity": {
+            "total": 100,
+            "used": 64,
+            "unit": "%"
+          },
+          "availableFutureCapacity": "36% headroom",
+          "specs": {
+            "material": "Ductile iron",
+            "diameter": "300mm",
+            "routeLength": "5,221 m"
+          },
+          "notes": ""
+        },
+        {
+          "elementId": "twin-util-wfd-fiber-completed",
+          "utilityId": "util-wfd-fiber-completed",
+          "type": "fiber",
+          "assetType": "utility",
+          "label": "ITPL Redundant OFC Ring",
+          "depthM": 0.75,
+          "horizontalOffsetM": 3.6,
+          "owner": "Bengaluru Fiber Grid",
+          "installDate": "2026-01-15",
+          "lifecycleState": "COMPLETED",
+          "condition": "NEW",
+          "capacity": {
+            "total": 100,
+            "used": 52,
+            "unit": "%"
+          },
+          "availableFutureCapacity": "48% headroom",
+          "specs": {
+            "cores": "144-core SMF",
+            "duct": "2 x 110mm HDPE",
+            "routeLength": "5,221 m"
+          },
+          "notes": ""
+        },
+        {
+          "elementId": "asset-wfd-res-fiber-2",
+          "corridorId": "corr-wfd-itpl",
+          "type": "reserved_duct",
+          "label": "Whitefield Spare OFC Duct",
+          "owner": "BBMP / UtilitySync reserve",
+          "depthM": 0.72,
+          "horizontalOffsetM": 4.6,
+          "condition": "RESERVED",
+          "installDate": "2026-02-18",
+          "reservedForUtility": "fiber",
+          "reservedFor": "Fiber capacity",
+          "capacity": {
+            "total": 5221,
+            "used": 0,
+            "unit": "m"
+          },
+          "specs": {
+            "material": "HDPE",
+            "diameter": "110-160mm"
+          },
+          "availableFutureCapacity": "Full route available for a second fiber operator.",
+          "lengthM": 5221,
+          "assetType": "reserved_duct",
+          "lifecycleState": "RESERVED"
+        }
+      ],
+      "projects": [
+        {
+          "projectId": "proj-wfd-fiber-ring",
+          "name": "Whitefield Redundant Fiber Ring Completion",
+          "corridorId": "corr-wfd-itpl",
+          "utilityType": "fiber",
+          "installMethod": "existing_duct",
+          "status": "READY",
+          "targetDepthM": 0.72,
+          "pipeSize": "144-core SMF",
+          "bends": 4,
+          "roadCrossings": 1,
+          "timeline": "3m",
+          "constraints": "",
+          "requirements": {
+            "equipment": [
+              {
+                "category": "cable_blowing",
+                "name": "Cable blowing unit",
+                "qty": 1
+              },
+              {
+                "category": "fiber_testing",
+                "name": "OTDR fiber tester",
+                "qty": 1
+              }
+            ],
+            "certifications": [
+              "BBMP Road Cutting Permit",
+              "OFC Splicing Certification"
+            ],
+            "methods": [
+              "existing_duct"
+            ],
+            "utilityExperience": [
+              "fiber"
+            ],
+            "minWorkers": 12,
+            "crewTypes": [
+              {
+                "type": "fiber_splicer",
+                "count": 3
+              },
+              {
+                "type": "civil",
+                "count": 4
+              }
+            ]
+          },
+          "createdAt": "2026-09-08T09:00:00+05:30",
+          "lengthM": 5221
+        }
+      ],
+      "summary": {
+        "reservedDucts": 1,
+        "expansionZones": 0,
+        "allAvailable": [
+          {
+            "elementId": "asset-wfd-res-fiber-2",
+            "corridorId": "corr-wfd-itpl",
+            "type": "reserved_duct",
+            "label": "Whitefield Spare OFC Duct",
+            "owner": "BBMP / UtilitySync reserve",
+            "depthM": 0.72,
+            "horizontalOffsetM": 4.6,
+            "condition": "RESERVED",
+            "installDate": "2026-02-18",
+            "reservedForUtility": "fiber",
+            "reservedFor": "Fiber capacity",
+            "capacity": {
+              "total": 5221,
+              "used": 0,
+              "unit": "m"
+            },
+            "specs": {
+              "material": "HDPE",
+              "diameter": "110-160mm"
+            },
+            "availableFutureCapacity": "Full route available for a second fiber operator.",
+            "lengthM": 5221,
+            "assetType": "reserved_duct",
+            "lifecycleState": "RESERVED"
+          }
+        ],
+        "completedProjects": 0,
+        "routeLengthM": 5221
       }
-    ],
-    "summary": {
-      "totalConflicts": 1,
-      "reservedDucts": 3,
-      "expansionZones": 1,
-      "futureCapacityScore": 87,
-      "conflictSummary": "Gas/water proximity conflict at 150mm (below 300mm NJUG minimum) across full corridor length",
-      "recommendation": "Reserved ducts 1 and 2 can accommodate fiber projects without any new excavation. Reserved power duct available for EV charging rollout."
+    },
+    {
+      "corridorId": "corr-orr-marathahalli",
+      "corridorName": "Outer Ring Road / Marathahalli Tech Belt",
+      "lastUpdated": "2026-09-19T00:00:00+05:30",
+      "totalElements": 4,
+      "futureCapacityScore": 0,
+      "elements": [
+        {
+          "elementId": "twin-util-orr-gail-gas",
+          "utilityId": "util-orr-gail-gas",
+          "type": "gas",
+          "assetType": "utility",
+          "label": "GAIL City Gas MDPE Main",
+          "depthM": 0.82,
+          "horizontalOffsetM": -0.92,
+          "owner": "GAIL Gas Bengaluru",
+          "installDate": "2026-01-15",
+          "lifecycleState": "EXISTING",
+          "condition": "GOOD",
+          "capacity": {
+            "total": 100,
+            "used": 54,
+            "unit": "%"
+          },
+          "availableFutureCapacity": "46% headroom",
+          "specs": {
+            "material": "MDPE",
+            "diameter": "180mm",
+            "routeLength": "4,194 m"
+          },
+          "notes": ""
+        },
+        {
+          "elementId": "twin-util-orr-bwssb-water",
+          "utilityId": "util-orr-bwssb-water",
+          "type": "water",
+          "assetType": "utility",
+          "label": "BWSSB Water Trunk Main 450mm",
+          "depthM": 0.97,
+          "horizontalOffsetM": -0.74,
+          "owner": "BWSSB",
+          "installDate": "2026-01-15",
+          "lifecycleState": "EXISTING",
+          "condition": "GOOD",
+          "capacity": {
+            "total": 100,
+            "used": 68,
+            "unit": "%"
+          },
+          "availableFutureCapacity": "32% headroom",
+          "specs": {
+            "material": "MS lined",
+            "diameter": "450mm",
+            "routeLength": "4,194 m"
+          },
+          "notes": ""
+        },
+        {
+          "elementId": "twin-util-orr-fiber-planned",
+          "utilityId": "util-orr-fiber-planned",
+          "type": "fiber",
+          "assetType": "utility",
+          "label": "ORR Smart Mobility Fiber Duct",
+          "depthM": 0.65,
+          "horizontalOffsetM": 4.4,
+          "owner": "BBMP Smart Mobility Cell",
+          "installDate": "",
+          "lifecycleState": "PLANNED",
+          "condition": "PLANNED",
+          "capacity": {
+            "total": 100,
+            "used": 0,
+            "unit": "%"
+          },
+          "availableFutureCapacity": "100% headroom",
+          "specs": {
+            "cores": "288-core planned",
+            "duct": "3 x 110mm HDPE",
+            "routeLength": "4,194 m"
+          },
+          "notes": ""
+        },
+        {
+          "elementId": "twin-util-orr-drain-existing",
+          "utilityId": "util-orr-drain-existing",
+          "type": "drainage",
+          "assetType": "utility",
+          "label": "ORR Storm Water Drain 900mm",
+          "depthM": 1.95,
+          "horizontalOffsetM": 5.2,
+          "owner": "BBMP SWD",
+          "installDate": "2026-01-15",
+          "lifecycleState": "EXISTING",
+          "condition": "GOOD",
+          "capacity": {
+            "total": 100,
+            "used": 59,
+            "unit": "%"
+          },
+          "availableFutureCapacity": "41% headroom",
+          "specs": {
+            "material": "RCC",
+            "diameter": "900mm",
+            "routeLength": "4,194 m"
+          },
+          "notes": ""
+        }
+      ],
+      "projects": [
+        {
+          "projectId": "proj-orr-fiber-hdd",
+          "name": "ORR Smart Mobility Fiber HDD Package",
+          "corridorId": "corr-orr-marathahalli",
+          "utilityType": "fiber",
+          "installMethod": "hdd",
+          "status": "PLANNING",
+          "targetDepthM": 0.75,
+          "pipeSize": "288-core SMF in 3 x 110mm ducts",
+          "bends": 4,
+          "roadCrossings": 2,
+          "timeline": "6m",
+          "constraints": "Two HDD crossings; gas-water conflict band must be potholed first.",
+          "requirements": {
+            "equipment": [
+              {
+                "category": "hdd_rig",
+                "name": "HDD rig",
+                "qty": 1
+              },
+              {
+                "category": "cable_blowing",
+                "name": "Cable blowing unit",
+                "qty": 1
+              },
+              {
+                "category": "vacuum_excavator",
+                "name": "Vacuum excavator",
+                "qty": 1
+              }
+            ],
+            "certifications": [
+              "BBMP Road Cutting Permit",
+              "OFC Splicing Certification",
+              "HDD Operator Certification",
+              "Gas Proximity Work"
+            ],
+            "methods": [
+              "hdd"
+            ],
+            "utilityExperience": [
+              "fiber"
+            ],
+            "minWorkers": 24,
+            "crewTypes": [
+              {
+                "type": "hdd_operator",
+                "count": 2
+              },
+              {
+                "type": "fiber_splicer",
+                "count": 4
+              },
+              {
+                "type": "traffic",
+                "count": 4
+              }
+            ]
+          },
+          "createdAt": "2026-09-08T09:00:00+05:30",
+          "assignedContractorId": "ctr-namma-civils",
+          "lengthM": 4194
+        }
+      ],
+      "summary": {
+        "reservedDucts": 0,
+        "expansionZones": 0,
+        "allAvailable": [],
+        "completedProjects": 0,
+        "routeLengthM": 4194
+      }
+    },
+    {
+      "corridorId": "corr-ecity",
+      "corridorName": "Electronic City Utility Spine",
+      "lastUpdated": "2026-09-19T00:00:00+05:30",
+      "totalElements": 4,
+      "futureCapacityScore": 26,
+      "elements": [
+        {
+          "elementId": "twin-util-ecity-bescom-inprogress",
+          "utilityId": "util-ecity-bescom-inprogress",
+          "type": "electricity",
+          "assetType": "utility",
+          "label": "BESCOM 33kV Data Centre Feeder",
+          "depthM": 1.15,
+          "horizontalOffsetM": -3.8,
+          "owner": "BESCOM",
+          "installDate": "2026-01-15",
+          "lifecycleState": "IN_PROGRESS",
+          "condition": "UNDER_CONSTRUCTION",
+          "capacity": {
+            "total": 100,
+            "used": 46,
+            "unit": "%"
+          },
+          "availableFutureCapacity": "54% headroom",
+          "specs": {
+            "voltage": "33kV",
+            "phase": "EC-PWR-02",
+            "routeLength": "2,851 m"
+          },
+          "notes": ""
+        },
+        {
+          "elementId": "twin-util-ecity-fiber-existing",
+          "utilityId": "util-ecity-fiber-existing",
+          "type": "fiber",
+          "assetType": "utility",
+          "label": "Electronics City OFC Backbone",
+          "depthM": 0.7,
+          "horizontalOffsetM": 2.9,
+          "owner": "ELCITA Fiber Operations",
+          "installDate": "2026-01-15",
+          "lifecycleState": "EXISTING",
+          "condition": "GOOD",
+          "capacity": {
+            "total": 100,
+            "used": 63,
+            "unit": "%"
+          },
+          "availableFutureCapacity": "37% headroom",
+          "specs": {
+            "cores": "96-core SMF",
+            "duct": "110mm HDPE",
+            "routeLength": "2,851 m"
+          },
+          "notes": ""
+        },
+        {
+          "elementId": "twin-util-ecity-water-future",
+          "utilityId": "util-ecity-water-future",
+          "type": "water",
+          "assetType": "utility",
+          "label": "Future Industrial Water Main",
+          "depthM": 1.35,
+          "horizontalOffsetM": 5.1,
+          "owner": "BWSSB",
+          "installDate": "",
+          "lifecycleState": "FUTURE",
+          "condition": "PLANNED",
+          "capacity": {
+            "total": 100,
+            "used": 0,
+            "unit": "%"
+          },
+          "availableFutureCapacity": "100% headroom",
+          "specs": {
+            "material": "DI proposed",
+            "diameter": "250mm",
+            "routeLength": "2,851 m"
+          },
+          "notes": ""
+        },
+        {
+          "elementId": "asset-ecity-res-power",
+          "corridorId": "corr-ecity",
+          "type": "reserved_duct",
+          "label": "Electronic City Reserved Power Duct",
+          "owner": "BBMP / UtilitySync reserve",
+          "depthM": 1.05,
+          "horizontalOffsetM": -5,
+          "condition": "RESERVED",
+          "installDate": "2026-02-18",
+          "reservedForUtility": "electricity",
+          "reservedFor": "Electricity capacity",
+          "capacity": {
+            "total": 2851,
+            "used": 0,
+            "unit": "m"
+          },
+          "specs": {
+            "material": "HDPE",
+            "diameter": "110-160mm"
+          },
+          "availableFutureCapacity": "Reserved for a future 11kV redundancy cable.",
+          "lengthM": 2851,
+          "assetType": "reserved_duct",
+          "lifecycleState": "RESERVED"
+        }
+      ],
+      "projects": [
+        {
+          "projectId": "proj-ecity-power-upgrade",
+          "name": "Electronic City 33kV Feeder Civil Works",
+          "corridorId": "corr-ecity",
+          "utilityType": "electricity",
+          "installMethod": "open_cut",
+          "status": "IN_PROGRESS",
+          "targetDepthM": 1.15,
+          "pipeSize": "33kV XLPE",
+          "bends": 4,
+          "roadCrossings": 1,
+          "timeline": "3m",
+          "constraints": "",
+          "requirements": {
+            "equipment": [
+              {
+                "category": "excavator",
+                "name": "Hydraulic excavator",
+                "qty": 1
+              },
+              {
+                "category": "cable_pulling",
+                "name": "HV cable puller",
+                "qty": 1
+              }
+            ],
+            "certifications": [
+              "BESCOM Electrical Works Approval",
+              "BBMP Road Cutting Permit"
+            ],
+            "methods": [
+              "open_cut"
+            ],
+            "utilityExperience": [
+              "electricity"
+            ],
+            "minWorkers": 18,
+            "crewTypes": [
+              {
+                "type": "electrician",
+                "count": 4
+              },
+              {
+                "type": "civil",
+                "count": 6
+              }
+            ]
+          },
+          "createdAt": "2026-09-08T09:00:00+05:30",
+          "assignedContractorId": "ctr-gridworks",
+          "lengthM": 2851
+        }
+      ],
+      "summary": {
+        "reservedDucts": 1,
+        "expansionZones": 0,
+        "allAvailable": [
+          {
+            "elementId": "asset-ecity-res-power",
+            "corridorId": "corr-ecity",
+            "type": "reserved_duct",
+            "label": "Electronic City Reserved Power Duct",
+            "owner": "BBMP / UtilitySync reserve",
+            "depthM": 1.05,
+            "horizontalOffsetM": -5,
+            "condition": "RESERVED",
+            "installDate": "2026-02-18",
+            "reservedForUtility": "electricity",
+            "reservedFor": "Electricity capacity",
+            "capacity": {
+              "total": 2851,
+              "used": 0,
+              "unit": "m"
+            },
+            "specs": {
+              "material": "HDPE",
+              "diameter": "110-160mm"
+            },
+            "availableFutureCapacity": "Reserved for a future 11kV redundancy cable.",
+            "lengthM": 2851,
+            "assetType": "reserved_duct",
+            "lifecycleState": "RESERVED"
+          }
+        ],
+        "completedProjects": 0,
+        "routeLengthM": 2851
+      }
+    },
+    {
+      "corridorId": "corr-bellandur-sarjapur",
+      "corridorName": "Bellandur / Sarjapur Road Corridor",
+      "lastUpdated": "2026-09-19T00:00:00+05:30",
+      "totalElements": 5,
+      "futureCapacityScore": 34,
+      "elements": [
+        {
+          "elementId": "twin-util-bell-fiber-existing",
+          "utilityId": "util-bell-fiber-existing",
+          "type": "fiber",
+          "assetType": "utility",
+          "label": "Sarjapur Broadband Duct Bank",
+          "depthM": 0.68,
+          "horizontalOffsetM": 2.6,
+          "owner": "Bengaluru Fiber Grid",
+          "installDate": "2026-01-15",
+          "lifecycleState": "EXISTING",
+          "condition": "GOOD",
+          "capacity": {
+            "total": 100,
+            "used": 94,
+            "unit": "%"
+          },
+          "availableFutureCapacity": "6% headroom",
+          "specs": {
+            "duct": "2 x 110mm HDPE",
+            "occupiedSubducts": "15 of 16",
+            "routeLength": "3,843 m"
+          },
+          "notes": ""
+        },
+        {
+          "elementId": "twin-util-bell-drain-existing",
+          "utilityId": "util-bell-drain-existing",
+          "type": "drainage",
+          "assetType": "utility",
+          "label": "Lake Edge Storm Drain",
+          "depthM": 1.85,
+          "horizontalOffsetM": -4,
+          "owner": "BBMP SWD",
+          "installDate": "2026-01-15",
+          "lifecycleState": "EXISTING",
+          "condition": "GOOD",
+          "capacity": {
+            "total": 100,
+            "used": 76,
+            "unit": "%"
+          },
+          "availableFutureCapacity": "24% headroom",
+          "specs": {
+            "material": "RCC",
+            "diameter": "1200mm",
+            "routeLength": "3,843 m"
+          },
+          "notes": ""
+        },
+        {
+          "elementId": "twin-util-bell-water-future",
+          "utilityId": "util-bell-water-future",
+          "type": "water",
+          "assetType": "utility",
+          "label": "Future Reuse Water Spur",
+          "depthM": 1.2,
+          "horizontalOffsetM": -1.2,
+          "owner": "BWSSB",
+          "installDate": "",
+          "lifecycleState": "FUTURE",
+          "condition": "PLANNED",
+          "capacity": {
+            "total": 100,
+            "used": 0,
+            "unit": "%"
+          },
+          "availableFutureCapacity": "100% headroom",
+          "specs": {
+            "material": "HDPE proposed",
+            "diameter": "200mm",
+            "routeLength": "3,843 m"
+          },
+          "notes": ""
+        },
+        {
+          "elementId": "asset-bell-power-reserve",
+          "corridorId": "corr-bellandur-sarjapur",
+          "type": "reserved_duct",
+          "label": "Bellandur Future Power Reserve Duct",
+          "owner": "BBMP / UtilitySync reserve",
+          "depthM": 0.95,
+          "horizontalOffsetM": 4.8,
+          "condition": "RESERVED",
+          "installDate": "2026-02-18",
+          "reservedForUtility": "electricity",
+          "reservedFor": "Electricity capacity",
+          "capacity": {
+            "total": 3843,
+            "used": 0,
+            "unit": "m"
+          },
+          "specs": {
+            "material": "HDPE",
+            "diameter": "110-160mm"
+          },
+          "availableFutureCapacity": "Reserved for a future BESCOM feeder; not released for EV charging.",
+          "lengthM": 3843,
+          "assetType": "reserved_duct",
+          "lifecycleState": "RESERVED"
+        },
+        {
+          "elementId": "asset-bell-expansion-zone",
+          "corridorId": "corr-bellandur-sarjapur",
+          "type": "expansion_zone",
+          "label": "Lake Buffer Expansion Zone",
+          "owner": "BBMP / UtilitySync reserve",
+          "depthM": 0.5,
+          "horizontalOffsetM": -5.8,
+          "condition": "RESERVED",
+          "installDate": "2026-02-18",
+          "reservedForUtility": "water",
+          "reservedFor": "Water capacity",
+          "capacity": {
+            "total": 3843,
+            "used": 0,
+            "unit": "m"
+          },
+          "specs": {
+            "material": "HDPE",
+            "diameter": "zone"
+          },
+          "availableFutureCapacity": "Available only after environmental clearance.",
+          "lengthM": 3843,
+          "assetType": "expansion_zone",
+          "lifecycleState": "RESERVED"
+        }
+      ],
+      "projects": [
+        {
+          "projectId": "proj-bell-sewer-relief",
+          "name": "Bellandur Lake Edge Storm Drain Relief",
+          "corridorId": "corr-bellandur-sarjapur",
+          "utilityType": "drainage",
+          "installMethod": "open_cut",
+          "status": "IN_PROGRESS",
+          "targetDepthM": 1.9,
+          "pipeSize": "1200mm RCC",
+          "bends": 4,
+          "roadCrossings": 1,
+          "timeline": "6m",
+          "constraints": "",
+          "requirements": {
+            "equipment": [
+              {
+                "category": "excavator",
+                "name": "Hydraulic excavator",
+                "qty": 2
+              },
+              {
+                "category": "pipe_laying",
+                "name": "Pipe laying equipment",
+                "qty": 1
+              },
+              {
+                "category": "dewatering",
+                "name": "Dewatering pump set",
+                "qty": 1
+              }
+            ],
+            "certifications": [
+              "BBMP Storm Water Drain Approval",
+              "Confined Space Entry"
+            ],
+            "methods": [
+              "open_cut"
+            ],
+            "utilityExperience": [
+              "drainage"
+            ],
+            "minWorkers": 22,
+            "crewTypes": [
+              {
+                "type": "civil",
+                "count": 10
+              },
+              {
+                "type": "safety",
+                "count": 2
+              }
+            ]
+          },
+          "createdAt": "2026-09-08T09:00:00+05:30",
+          "assignedContractorId": "ctr-cauvery-utility",
+          "dependencies": [
+            {
+              "dependencyId": "dep-bell-lake-buffer-noc",
+              "name": "Lake-buffer environmental NOC",
+              "status": "PENDING",
+              "requiredFor": "Deep excavation"
+            },
+            {
+              "dependencyId": "dep-bell-traffic-plan",
+              "name": "Sarjapur Road traffic diversion plan",
+              "status": "APPROVED",
+              "requiredFor": "Lane closure"
+            }
+          ],
+          "lengthM": 3843
+        },
+        {
+          "projectId": "proj-bell-ev-duct",
+          "name": "Sarjapur Road EV Charging Duct Proposal",
+          "corridorId": "corr-bellandur-sarjapur",
+          "utilityType": "ev_charging",
+          "installMethod": "existing_duct",
+          "status": "READY",
+          "targetDepthM": 0.95,
+          "pipeSize": "150mm power duct reuse",
+          "bends": 4,
+          "roadCrossings": 1,
+          "timeline": "3m",
+          "constraints": "Proposal tries to consume BESCOM-reserved feeder duct for EV charging.",
+          "requirements": {
+            "equipment": [
+              {
+                "category": "cable_pulling",
+                "name": "Power cable pulling winch",
+                "qty": 1
+              }
+            ],
+            "certifications": [
+              "BESCOM Electrical Works Approval",
+              "EVSE Installation Certification"
+            ],
+            "methods": [
+              "existing_duct"
+            ],
+            "utilityExperience": [
+              "electricity",
+              "ev_charging"
+            ],
+            "minWorkers": 10,
+            "crewTypes": [
+              {
+                "type": "electrician",
+                "count": 4
+              }
+            ]
+          },
+          "createdAt": "2026-09-08T09:00:00+05:30",
+          "requiredReservedAssetId": "asset-bell-power-reserve",
+          "lengthM": 3843
+        }
+      ],
+      "summary": {
+        "reservedDucts": 1,
+        "expansionZones": 1,
+        "allAvailable": [
+          {
+            "elementId": "asset-bell-power-reserve",
+            "corridorId": "corr-bellandur-sarjapur",
+            "type": "reserved_duct",
+            "label": "Bellandur Future Power Reserve Duct",
+            "owner": "BBMP / UtilitySync reserve",
+            "depthM": 0.95,
+            "horizontalOffsetM": 4.8,
+            "condition": "RESERVED",
+            "installDate": "2026-02-18",
+            "reservedForUtility": "electricity",
+            "reservedFor": "Electricity capacity",
+            "capacity": {
+              "total": 3843,
+              "used": 0,
+              "unit": "m"
+            },
+            "specs": {
+              "material": "HDPE",
+              "diameter": "110-160mm"
+            },
+            "availableFutureCapacity": "Reserved for a future BESCOM feeder; not released for EV charging.",
+            "lengthM": 3843,
+            "assetType": "reserved_duct",
+            "lifecycleState": "RESERVED"
+          }
+        ],
+        "completedProjects": 0,
+        "routeLengthM": 3843
+      }
+    },
+    {
+      "corridorId": "corr-central-mg-cubbon",
+      "corridorName": "Central Bengaluru / MG Road / Cubbon Axis",
+      "lastUpdated": "2026-09-19T00:00:00+05:30",
+      "totalElements": 4,
+      "futureCapacityScore": 26,
+      "elements": [
+        {
+          "elementId": "twin-util-central-water-completed",
+          "utilityId": "util-central-water-completed",
+          "type": "water",
+          "assetType": "utility",
+          "label": "MG Road Rehabilitated Water Main",
+          "depthM": 1.3,
+          "horizontalOffsetM": -2.1,
+          "owner": "BWSSB",
+          "installDate": "2026-01-15",
+          "lifecycleState": "COMPLETED",
+          "condition": "NEW",
+          "capacity": {
+            "total": 100,
+            "used": 48,
+            "unit": "%"
+          },
+          "availableFutureCapacity": "52% headroom",
+          "specs": {
+            "material": "DI K9",
+            "diameter": "300mm",
+            "routeLength": "3,005 m"
+          },
+          "notes": ""
+        },
+        {
+          "elementId": "twin-util-central-bescom-existing",
+          "utilityId": "util-central-bescom-existing",
+          "type": "electricity",
+          "assetType": "utility",
+          "label": "BESCOM CBD Ring Main",
+          "depthM": 1,
+          "horizontalOffsetM": 3.2,
+          "owner": "BESCOM",
+          "installDate": "2026-01-15",
+          "lifecycleState": "EXISTING",
+          "condition": "GOOD",
+          "capacity": {
+            "total": 100,
+            "used": 77,
+            "unit": "%"
+          },
+          "availableFutureCapacity": "23% headroom",
+          "specs": {
+            "voltage": "11kV",
+            "cableType": "XLPE armoured",
+            "routeLength": "3,005 m"
+          },
+          "notes": ""
+        },
+        {
+          "elementId": "twin-util-central-drain-existing",
+          "utilityId": "util-central-drain-existing",
+          "type": "drainage",
+          "assetType": "utility",
+          "label": "CBD Combined Drain 750mm",
+          "depthM": 1.75,
+          "horizontalOffsetM": 5.4,
+          "owner": "BBMP SWD",
+          "installDate": "2026-01-15",
+          "lifecycleState": "EXISTING",
+          "condition": "GOOD",
+          "capacity": {
+            "total": 100,
+            "used": 58,
+            "unit": "%"
+          },
+          "availableFutureCapacity": "42% headroom",
+          "specs": {
+            "material": "RCC",
+            "diameter": "750mm",
+            "routeLength": "3,005 m"
+          },
+          "notes": ""
+        },
+        {
+          "elementId": "asset-central-comms-reserve",
+          "corridorId": "corr-central-mg-cubbon",
+          "type": "reserved_duct",
+          "label": "MG Road Smart Poles Comms Duct",
+          "owner": "BBMP / UtilitySync reserve",
+          "depthM": 0.65,
+          "horizontalOffsetM": -4.7,
+          "condition": "RESERVED",
+          "installDate": "2026-02-18",
+          "reservedForUtility": "fiber",
+          "reservedFor": "Fiber capacity",
+          "capacity": {
+            "total": 3005,
+            "used": 0,
+            "unit": "m"
+          },
+          "specs": {
+            "material": "HDPE",
+            "diameter": "110-160mm"
+          },
+          "availableFutureCapacity": "Available for smart-city low-voltage comms.",
+          "lengthM": 3005,
+          "assetType": "reserved_duct",
+          "lifecycleState": "RESERVED"
+        }
+      ],
+      "projects": [
+        {
+          "projectId": "proj-central-water-rehab",
+          "name": "MG Road Water Main Rehabilitation",
+          "corridorId": "corr-central-mg-cubbon",
+          "utilityType": "water",
+          "installMethod": "open_cut",
+          "status": "COMPLETED",
+          "targetDepthM": 1.3,
+          "pipeSize": "300mm DI K9",
+          "bends": 4,
+          "roadCrossings": 1,
+          "timeline": "completed",
+          "constraints": "",
+          "requirements": {
+            "equipment": [
+              {
+                "category": "pipe_laying",
+                "name": "Pipe laying equipment",
+                "qty": 1
+              }
+            ],
+            "certifications": [
+              "BWSSB Water Works Approval",
+              "BBMP Road Cutting Permit"
+            ],
+            "methods": [
+              "open_cut"
+            ],
+            "utilityExperience": [
+              "water"
+            ],
+            "minWorkers": 16,
+            "crewTypes": [
+              {
+                "type": "civil",
+                "count": 8
+              },
+              {
+                "type": "plumber",
+                "count": 4
+              }
+            ]
+          },
+          "createdAt": "2026-09-08T09:00:00+05:30",
+          "assignedContractorId": "ctr-cauvery-utility",
+          "completedAt": "2026-07-05T18:30:00+05:30",
+          "lengthM": 3005
+        }
+      ],
+      "summary": {
+        "reservedDucts": 1,
+        "expansionZones": 0,
+        "allAvailable": [
+          {
+            "elementId": "asset-central-comms-reserve",
+            "corridorId": "corr-central-mg-cubbon",
+            "type": "reserved_duct",
+            "label": "MG Road Smart Poles Comms Duct",
+            "owner": "BBMP / UtilitySync reserve",
+            "depthM": 0.65,
+            "horizontalOffsetM": -4.7,
+            "condition": "RESERVED",
+            "installDate": "2026-02-18",
+            "reservedForUtility": "fiber",
+            "reservedFor": "Fiber capacity",
+            "capacity": {
+              "total": 3005,
+              "used": 0,
+              "unit": "m"
+            },
+            "specs": {
+              "material": "HDPE",
+              "diameter": "110-160mm"
+            },
+            "availableFutureCapacity": "Available for smart-city low-voltage comms.",
+            "lengthM": 3005,
+            "assetType": "reserved_duct",
+            "lifecycleState": "RESERVED"
+          }
+        ],
+        "completedProjects": 1,
+        "routeLengthM": 3005
+      }
     }
-  }
+  ]
 }

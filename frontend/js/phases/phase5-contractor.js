@@ -63,6 +63,16 @@ window.Phase5 = (function() {
         </div>`;
     }).join('');
 
+    const workforce = c.workforceAvailability
+      ? `<div>Workers: ${c.workforceAvailability.availableWorkers} available / ${c.workforceAvailability.requiredWorkers} required</div>`
+      : '';
+    const workload = c.workloadConstraints
+      ? `<div>Workload: ${c.workloadConstraints.workloadPercent}% (${c.workloadConstraints.status})</div>`
+      : '';
+    const equipment = (c.equipmentAvailability || []).map(item =>
+      `<div>${item.category}: ${item.available} available / ${item.required} required</div>`
+    ).join('');
+
     return `
       <div class="contractor-card ${isRecommended ? 'best-match' : ''}" style="animation-delay:${index * 0.1}s">
         <div class="contractor-header">
@@ -91,9 +101,12 @@ window.Phase5 = (function() {
         <div class="req-list">${reqItems}</div>
 
         ${c.narrative ? `
-          <div class="section-divider">AI Analysis</div>
+          <div class="section-divider">Deterministic Match Explanation</div>
           <div class="contractor-narrative">
             "${c.narrative}"
+            <div style="margin-top:8px;font-size:0.74rem;color:var(--text-muted);line-height:1.5">
+              ${workforce}${workload}${equipment}
+            </div>
           </div>` : ''}
       </div>`;
   }

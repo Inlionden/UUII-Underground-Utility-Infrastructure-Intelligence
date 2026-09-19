@@ -9,7 +9,7 @@ window.Phase6 = (function() {
   async function onEnter() {
     try {
       const twin = await API.getDigitalTwin(
-        AppState.corridor ? AppState.corridor.corridorId : 'corr-001'
+        AppState.corridor ? AppState.corridor.corridorId : window.US_CONFIG.DEFAULT_CORRIDOR_ID
       );
       AppState.twin = twin;
       twinData = twin;
@@ -44,7 +44,7 @@ window.Phase6 = (function() {
       simBtn && simBtn.addEventListener('click', runSimulation);
 
       completePhase(6);
-      showToast('Digital Twin loaded — 2.3km corridor fully recorded', 'success');
+      showToast(`Digital Twin loaded — ${twin.totalElements} persisted asset(s)`, 'success');
 
     } catch (err) {
       showToast('Failed to load digital twin: ' + err.message, 'error');
@@ -166,7 +166,7 @@ window.Phase6 = (function() {
 
   async function runSimulation() {
     const utilType = document.getElementById('sim-util-type').value;
-    const length   = parseInt(document.getElementById('sim-length').value) || 2300;
+    const length   = getRouteLengthM();
     const resultEl = document.getElementById('sim-result');
     const btn      = document.getElementById('btn-simulate');
 
@@ -176,7 +176,7 @@ window.Phase6 = (function() {
 
     try {
       const sim = await API.simulateFutureProject(
-        AppState.corridor ? AppState.corridor.corridorId : 'corr-001',
+        AppState.corridor ? AppState.corridor.corridorId : window.US_CONFIG.DEFAULT_CORRIDOR_ID,
         utilType,
         length
       );
@@ -195,8 +195,15 @@ window.Phase6 = (function() {
       showToast('Simulation failed: ' + err.message, 'error');
     } finally {
       btn.disabled = false;
-      btn.innerHTML = '🤖 Check Existing Capacity';
+      btn.innerHTML = 'Check Existing Capacity';
     }
+  }
+
+  function getRouteLengthM() {
+    const drawn = window.MapManager && MapManager.getDrawnRoute && MapManager.getDrawnRoute();
+    if (drawn && MapManager.getRouteDistanceKm) return Math.round(MapManager.getRouteDistanceKm(drawn) * 1000);
+    if (AppState.corridor && Number(AppState.corridor.lengthM)) return Number(AppState.corridor.lengthM);
+    return parseInt(document.getElementById('sim-length').value, 10) || 0;
   }
 
   function renderSimResult(sim, container) {

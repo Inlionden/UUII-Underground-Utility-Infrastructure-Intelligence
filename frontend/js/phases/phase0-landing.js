@@ -82,28 +82,9 @@
     if (!btn) return;
 
     btn.addEventListener('click', () => {
-      const phase0 = document.getElementById('phase-0');
-      const mainApp = document.getElementById('main-app');
-
-      // Exit animation on landing
-      phase0.classList.add('exit');
-
-      setTimeout(() => {
-        phase0.style.display = 'none';
-        mainApp.classList.remove('hidden');
-
-        // Initialize map now that container is visible
-        MapManager.init();
-
-        // Go to Phase 1
-        goToPhase(1);
-
-        // Show AI welcome after a moment
-        setTimeout(() => {
-          if (typeof initAIWelcome === 'function') initAIWelcome();
-        }, 1200);
-
-      }, 600);
+      if (typeof enterPlatform === 'function') {
+        enterPlatform();
+      }
     });
   }
 

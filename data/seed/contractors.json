@@ -1,157 +1,618 @@
 {
   "contractors": [
     {
-      "contractorId": "ctr-001",
-      "name": "BuildCore Infrastructure Ltd",
-      "location": "Croydon, London",
-      "established": 2008,
-      "employees": 85,
-      "matchScore": 42,
-      "equipment": [
-        { "name": "Hydraulic Excavators (Cat 308)", "count": 4, "owned": true },
-        { "name": "Compactor Plates", "count": 6, "owned": true },
-        { "name": "Cable Drums (up to 1500kg)", "count": 3, "owned": true },
-        { "name": "Traffic Management Vehicles", "count": 2, "owned": true },
-        { "name": "Pipe Layer / Bedding Equipment", "count": 2, "owned": true },
-        { "name": "Vacuum Excavator (Vac-Ex)", "count": 1, "owned": false, "note": "Hired" }
+      "contractorId": "ctr-bengaluru-tunnel",
+      "name": "Bengaluru Microtunnel & Utility Services",
+      "location": "Peenya, Bengaluru",
+      "established": 2015,
+      "employees": 180,
+      "totalWorkers": 180,
+      "workersAssigned": 42,
+      "methods": [
+        "hdd",
+        "microtunneling",
+        "open_cut",
+        "existing_duct"
       ],
-      "certifications": [
-        { "name": "NRSWA (Streetworks)", "status": "VALID", "expiry": "2026-08" },
-        { "name": "Gas Proximity Work", "status": "VALID", "expiry": "2025-11" },
-        { "name": "ISO 9001 Quality", "status": "VALID", "expiry": "2026-03" }
+      "utilityExperience": [
+        "fiber",
+        "electricity",
+        "water",
+        "drainage"
       ],
       "crewTypes": [
-        { "type": "Civil Operatives (NRSWA)", "count": 22 },
-        { "type": "Plant Operators", "count": 8 },
-        { "type": "Traffic Management", "count": 6 },
-        { "type": "Site Supervisors", "count": 4 }
+        {
+          "type": "civil",
+          "count": 48,
+          "assigned": 10
+        },
+        {
+          "type": "hdd_operator",
+          "count": 8,
+          "assigned": 2
+        },
+        {
+          "type": "fiber_splicer",
+          "count": 10,
+          "assigned": 1
+        },
+        {
+          "type": "electrician",
+          "count": 12,
+          "assigned": 3
+        },
+        {
+          "type": "traffic",
+          "count": 14,
+          "assigned": 4
+        },
+        {
+          "type": "safety",
+          "count": 8,
+          "assigned": 2
+        }
+      ],
+      "equipment": [
+        {
+          "equipmentId": "eq-bmt-hdd-01",
+          "name": "Vermeer D24x40 HDD Rig",
+          "category": "hdd_rig",
+          "count": 1,
+          "owned": true,
+          "status": "AVAILABLE",
+          "assignedProjectId": "",
+          "capabilities": [
+            "hdd_rig"
+          ]
+        },
+        {
+          "equipmentId": "eq-bmt-hdd-02",
+          "name": "Ditch Witch JT20 HDD Rig",
+          "category": "hdd_rig",
+          "count": 1,
+          "owned": true,
+          "status": "ASSIGNED",
+          "assignedProjectId": "proj-airport-utility",
+          "capabilities": [
+            "hdd_rig"
+          ]
+        },
+        {
+          "equipmentId": "eq-bmt-vac-01",
+          "name": "Vacuum Excavator 6000L",
+          "category": "vacuum_excavator",
+          "count": 2,
+          "owned": true,
+          "status": "AVAILABLE",
+          "assignedProjectId": "",
+          "capabilities": [
+            "vacuum_excavator"
+          ]
+        },
+        {
+          "equipmentId": "eq-bmt-blow-01",
+          "name": "Plumettaz Cable Blowing Unit",
+          "category": "cable_blowing",
+          "count": 2,
+          "owned": true,
+          "status": "AVAILABLE",
+          "assignedProjectId": "",
+          "capabilities": [
+            "cable_blowing"
+          ]
+        },
+        {
+          "equipmentId": "eq-bmt-otdr-01",
+          "name": "OTDR Test Kit",
+          "category": "fiber_testing",
+          "count": 3,
+          "owned": true,
+          "status": "AVAILABLE",
+          "assignedProjectId": "",
+          "capabilities": [
+            "fiber_testing"
+          ]
+        },
+        {
+          "equipmentId": "eq-bmt-exc-01",
+          "name": "8T Hydraulic Excavator",
+          "category": "excavator",
+          "count": 3,
+          "owned": true,
+          "status": "AVAILABLE",
+          "assignedProjectId": "",
+          "capabilities": [
+            "excavator"
+          ]
+        }
+      ],
+      "certifications": [
+        {
+          "name": "BBMP Road Cutting Permit",
+          "status": "VALID",
+          "expiry": "2027-06"
+        },
+        {
+          "name": "OFC Splicing Certification",
+          "status": "VALID",
+          "expiry": "2027-06"
+        },
+        {
+          "name": "HDD Operator Certification",
+          "status": "VALID",
+          "expiry": "2027-06"
+        },
+        {
+          "name": "Gas Proximity Work",
+          "status": "VALID",
+          "expiry": "2027-06"
+        },
+        {
+          "name": "BESCOM Electrical Works Approval",
+          "status": "VALID",
+          "expiry": "2027-06"
+        },
+        {
+          "name": "Confined Space Entry",
+          "status": "VALID",
+          "expiry": "2027-06"
+        }
+      ],
+      "currentProjectAssignments": [
+        {
+          "projectId": "active-package",
+          "workersAssigned": 42,
+          "crewsAssigned": 2,
+          "equipmentIds": []
+        }
       ],
       "previousProjects": [
-        "Water main replacement, Lewisham (800m, 2023)",
-        "Gas service connections, Brixton (2022)",
-        "Road reinstatement, A205 (2021)"
+        "Peenya, Bengaluru utility works (2025)"
       ],
-      "gaps": [
-        {
-          "requirement": "Horizontal Directional Drilling (HDD) Rig",
-          "severity": "CRITICAL",
-          "reason": "Required for 3 road crossings (45m total). Open-cut not permitted under primary road.",
-          "mitigation": "Could sub-contract HDD works to specialist"
-        },
-        {
-          "requirement": "Cable Pulling Winch (fiber-rated)",
-          "severity": "CRITICAL",
-          "reason": "Required for 96-core fiber cable installation in ducted sections.",
-          "mitigation": "Not available in fleet. Must hire or partner."
-        },
-        {
-          "requirement": "City & Guilds Fiber Optic Splicing Certification",
-          "severity": "HIGH",
-          "reason": "No certified fiber splicers in permanent crew.",
-          "mitigation": "Could sub-contract splicing to specialist"
-        }
-      ]
+      "gaps": []
     },
     {
-      "contractorId": "ctr-002",
-      "name": "TerraFlow Solutions Ltd",
-      "location": "Bermondsey, London",
-      "established": 2014,
-      "employees": 120,
-      "matchScore": 94,
-      "equipment": [
-        { "name": "Horizontal Directional Drill (Vermeer D23x30)", "count": 2, "owned": true },
-        { "name": "Cable Pulling Winch (fiber-rated, 5T)", "count": 2, "owned": true },
-        { "name": "Hydraulic Excavators (Cat 308/313)", "count": 5, "owned": true },
-        { "name": "Vacuum Excavators (SUMO 3000)", "count": 3, "owned": true },
-        { "name": "Cable Blowing Unit (Plumettaz)", "count": 1, "owned": true },
-        { "name": "Compactor Plates + Rollers", "count": 8, "owned": true },
-        { "name": "OTDR Fiber Testing Equipment", "count": 2, "owned": true },
-        { "name": "Traffic Management Fleet", "count": 4, "owned": true }
+      "contractorId": "ctr-namma-civils",
+      "name": "Namma Civils & Roads Pvt Ltd",
+      "location": "Hennur, Bengaluru",
+      "established": 2015,
+      "employees": 110,
+      "totalWorkers": 110,
+      "workersAssigned": 28,
+      "methods": [
+        "open_cut",
+        "road_reinstatement"
       ],
-      "certifications": [
-        { "name": "NRSWA (Streetworks)", "status": "VALID", "expiry": "2027-02" },
-        { "name": "Gas Proximity Work", "status": "VALID", "expiry": "2026-09" },
-        { "name": "City & Guilds Fiber Optic (Installation + Splicing)", "status": "VALID", "expiry": "2026-06" },
-        { "name": "Confined Space Entry", "status": "VALID", "expiry": "2025-12" },
-        { "name": "HDD Operator Certification (IADC)", "status": "VALID", "expiry": "2026-01" },
-        { "name": "ISO 9001 + ISO 14001", "status": "VALID", "expiry": "2026-07" }
+      "utilityExperience": [
+        "water",
+        "drainage",
+        "roadworks"
       ],
       "crewTypes": [
-        { "type": "Civil Operatives (NRSWA)", "count": 30 },
-        { "type": "HDD Operators", "count": 4 },
-        { "type": "Fiber Optic Splicers", "count": 6 },
-        { "type": "Plant Operators", "count": 10 },
-        { "type": "Traffic Management", "count": 8 },
-        { "type": "Site Engineers", "count": 5 }
+        {
+          "type": "civil",
+          "count": 38,
+          "assigned": 8
+        },
+        {
+          "type": "traffic",
+          "count": 10,
+          "assigned": 4
+        },
+        {
+          "type": "safety",
+          "count": 5,
+          "assigned": 1
+        },
+        {
+          "type": "hdd_operator",
+          "count": 0,
+          "assigned": 0
+        },
+        {
+          "type": "fiber_splicer",
+          "count": 0,
+          "assigned": 0
+        }
+      ],
+      "equipment": [
+        {
+          "equipmentId": "eq-namma-exc-01",
+          "name": "5T Hydraulic Excavator",
+          "category": "excavator",
+          "count": 4,
+          "owned": true,
+          "status": "AVAILABLE",
+          "assignedProjectId": "",
+          "capabilities": [
+            "excavator"
+          ]
+        },
+        {
+          "equipmentId": "eq-namma-comp-01",
+          "name": "Compactor Plate Set",
+          "category": "compaction",
+          "count": 6,
+          "owned": true,
+          "status": "AVAILABLE",
+          "assignedProjectId": "",
+          "capabilities": [
+            "compaction"
+          ]
+        },
+        {
+          "equipmentId": "eq-namma-tm-01",
+          "name": "Traffic Management Vehicle",
+          "category": "traffic_management",
+          "count": 2,
+          "owned": true,
+          "status": "AVAILABLE",
+          "assignedProjectId": "",
+          "capabilities": [
+            "traffic_management"
+          ]
+        }
+      ],
+      "certifications": [
+        {
+          "name": "BBMP Road Cutting Permit",
+          "status": "VALID",
+          "expiry": "2027-06"
+        },
+        {
+          "name": "ISO 9001 Quality",
+          "status": "VALID",
+          "expiry": "2027-06"
+        }
+      ],
+      "currentProjectAssignments": [
+        {
+          "projectId": "active-package",
+          "workersAssigned": 28,
+          "crewsAssigned": 2,
+          "equipmentIds": []
+        }
       ],
       "previousProjects": [
-        "Fiber duct installation, TfL Cable Route E3 (4.2km, 2024)",
-        "HDD crossings under Thames, Canary Wharf (2023)",
-        "Multi-utility corridor, Southwark (1.8km, 2022)",
-        "Fiber rollout Phase 2, BT Openreach, SE London (2021)"
+        "Hennur, Bengaluru utility works (2025)"
       ],
-      "gaps": [
-        {
-          "requirement": "EV Charging Infrastructure Experience",
-          "severity": "LOW",
-          "reason": "Project scope includes 4 EV charging duct provisions. TerraFlow has no direct EV experience.",
-          "mitigation": "Standard civils work — no specialist equipment needed. Minor gap."
-        }
-      ]
+      "gaps": []
     },
     {
-      "contractorId": "ctr-003",
-      "name": "UnitedDig Services",
-      "location": "Streatham, London",
-      "established": 2017,
-      "employees": 45,
-      "matchScore": 58,
-      "equipment": [
-        { "name": "Hydraulic Excavators (JCB 8030)", "count": 3, "owned": true },
-        { "name": "Cable Drums (up to 800kg)", "count": 2, "owned": true },
-        { "name": "Compactor Plates", "count": 4, "owned": true },
-        { "name": "Pipe Layers", "count": 1, "owned": true }
+      "contractorId": "ctr-techduct-fiber",
+      "name": "TechDuct Fiber Infra LLP",
+      "location": "Mahadevapura, Bengaluru",
+      "established": 2015,
+      "employees": 72,
+      "totalWorkers": 72,
+      "workersAssigned": 18,
+      "methods": [
+        "existing_duct",
+        "microtrenching",
+        "open_cut"
       ],
-      "certifications": [
-        { "name": "NRSWA (Streetworks)", "status": "VALID", "expiry": "2025-10" },
-        { "name": "ISO 9001 Quality", "status": "EXPIRING SOON", "expiry": "2025-11" }
+      "utilityExperience": [
+        "fiber",
+        "ev_charging"
       ],
       "crewTypes": [
-        { "type": "Civil Operatives (NRSWA)", "count": 14 },
-        { "type": "Plant Operators", "count": 5 },
-        { "type": "Traffic Management", "count": 3 }
+        {
+          "type": "civil",
+          "count": 18,
+          "assigned": 4
+        },
+        {
+          "type": "fiber_splicer",
+          "count": 9,
+          "assigned": 2
+        },
+        {
+          "type": "traffic",
+          "count": 6,
+          "assigned": 2
+        },
+        {
+          "type": "electrician",
+          "count": 4,
+          "assigned": 1
+        }
+      ],
+      "equipment": [
+        {
+          "equipmentId": "eq-tech-blow-01",
+          "name": "Cable Blowing Unit",
+          "category": "cable_blowing",
+          "count": 2,
+          "owned": true,
+          "status": "AVAILABLE",
+          "assignedProjectId": "",
+          "capabilities": [
+            "cable_blowing"
+          ]
+        },
+        {
+          "equipmentId": "eq-tech-otdr-01",
+          "name": "OTDR and Fusion Splicer Kit",
+          "category": "fiber_testing",
+          "count": 2,
+          "owned": true,
+          "status": "AVAILABLE",
+          "assignedProjectId": "",
+          "capabilities": [
+            "fiber_testing"
+          ]
+        },
+        {
+          "equipmentId": "eq-tech-micro-01",
+          "name": "Microtrencher",
+          "category": "microtrencher",
+          "count": 1,
+          "owned": true,
+          "status": "AVAILABLE",
+          "assignedProjectId": "",
+          "capabilities": [
+            "microtrencher"
+          ]
+        }
+      ],
+      "certifications": [
+        {
+          "name": "BBMP Road Cutting Permit",
+          "status": "VALID",
+          "expiry": "2027-06"
+        },
+        {
+          "name": "OFC Splicing Certification",
+          "status": "VALID",
+          "expiry": "2027-06"
+        },
+        {
+          "name": "EVSE Installation Certification",
+          "status": "VALID",
+          "expiry": "2027-06"
+        }
+      ],
+      "currentProjectAssignments": [
+        {
+          "projectId": "active-package",
+          "workersAssigned": 18,
+          "crewsAssigned": 2,
+          "equipmentIds": []
+        }
       ],
       "previousProjects": [
-        "Water service connections, Herne Hill (2024)",
-        "Footway reinstatement, Streatham High Road (2023)"
+        "Mahadevapura, Bengaluru utility works (2025)"
       ],
-      "gaps": [
+      "gaps": []
+    },
+    {
+      "contractorId": "ctr-cauvery-utility",
+      "name": "Cauvery Utility Constructors",
+      "location": "Mysuru Road, Bengaluru",
+      "established": 2015,
+      "employees": 140,
+      "totalWorkers": 140,
+      "workersAssigned": 64,
+      "methods": [
+        "open_cut",
+        "pipe_bursting"
+      ],
+      "utilityExperience": [
+        "water",
+        "drainage"
+      ],
+      "crewTypes": [
         {
-          "requirement": "Horizontal Directional Drilling (HDD) Rig",
-          "severity": "CRITICAL",
-          "reason": "Required for 3 road crossings under the primary road. No HDD capability.",
-          "mitigation": "Would require full sub-contract for HDD sections."
+          "type": "civil",
+          "count": 52,
+          "assigned": 24
         },
         {
-          "requirement": "Cable Pulling Winch (fiber-rated)",
-          "severity": "CRITICAL",
-          "reason": "Existing cable drums rated to 800kg — insufficient for 96-core fiber reel weight.",
-          "mitigation": "Equipment hire required."
+          "type": "plumber",
+          "count": 14,
+          "assigned": 6
         },
         {
-          "requirement": "City & Guilds Fiber Optic Splicing",
-          "severity": "HIGH",
-          "reason": "No fiber-certified crew.",
-          "mitigation": "Sub-contract splicing."
+          "type": "safety",
+          "count": 8,
+          "assigned": 3
         },
         {
-          "requirement": "Vacuum Excavator",
-          "severity": "MEDIUM",
-          "reason": "Required for safe excavation near existing gas main.",
-          "mitigation": "Available for hire locally."
+          "type": "traffic",
+          "count": 10,
+          "assigned": 5
         }
-      ]
+      ],
+      "equipment": [
+        {
+          "equipmentId": "eq-cauv-exc-01",
+          "name": "14T Excavator",
+          "category": "excavator",
+          "count": 3,
+          "owned": true,
+          "status": "AVAILABLE",
+          "assignedProjectId": "",
+          "capabilities": [
+            "excavator"
+          ]
+        },
+        {
+          "equipmentId": "eq-cauv-pipe-01",
+          "name": "Pipe Laying Boom and Bedding Set",
+          "category": "pipe_laying",
+          "count": 2,
+          "owned": true,
+          "status": "AVAILABLE",
+          "assignedProjectId": "",
+          "capabilities": [
+            "pipe_laying"
+          ]
+        },
+        {
+          "equipmentId": "eq-cauv-dewater-01",
+          "name": "Dewatering Pump Set",
+          "category": "dewatering",
+          "count": 2,
+          "owned": true,
+          "status": "AVAILABLE",
+          "assignedProjectId": "",
+          "capabilities": [
+            "dewatering"
+          ]
+        },
+        {
+          "equipmentId": "eq-cauv-vac-01",
+          "name": "Vacuum Excavator",
+          "category": "vacuum_excavator",
+          "count": 1,
+          "owned": true,
+          "status": "AVAILABLE",
+          "assignedProjectId": "",
+          "capabilities": [
+            "vacuum_excavator"
+          ]
+        }
+      ],
+      "certifications": [
+        {
+          "name": "BBMP Storm Water Drain Approval",
+          "status": "VALID",
+          "expiry": "2027-06"
+        },
+        {
+          "name": "BWSSB Water Works Approval",
+          "status": "VALID",
+          "expiry": "2027-06"
+        },
+        {
+          "name": "BBMP Road Cutting Permit",
+          "status": "VALID",
+          "expiry": "2027-06"
+        },
+        {
+          "name": "Confined Space Entry",
+          "status": "VALID",
+          "expiry": "2027-06"
+        }
+      ],
+      "currentProjectAssignments": [
+        {
+          "projectId": "active-package",
+          "workersAssigned": 64,
+          "crewsAssigned": 2,
+          "equipmentIds": []
+        }
+      ],
+      "previousProjects": [
+        "Mysuru Road, Bengaluru utility works (2025)"
+      ],
+      "gaps": []
+    },
+    {
+      "contractorId": "ctr-gridworks",
+      "name": "GridWorks Energy Infra Pvt Ltd",
+      "location": "Electronic City, Bengaluru",
+      "established": 2015,
+      "employees": 96,
+      "totalWorkers": 96,
+      "workersAssigned": 30,
+      "methods": [
+        "open_cut",
+        "existing_duct"
+      ],
+      "utilityExperience": [
+        "electricity",
+        "ev_charging"
+      ],
+      "crewTypes": [
+        {
+          "type": "civil",
+          "count": 20,
+          "assigned": 5
+        },
+        {
+          "type": "electrician",
+          "count": 18,
+          "assigned": 6
+        },
+        {
+          "type": "traffic",
+          "count": 8,
+          "assigned": 2
+        },
+        {
+          "type": "safety",
+          "count": 6,
+          "assigned": 2
+        }
+      ],
+      "equipment": [
+        {
+          "equipmentId": "eq-grid-cable-01",
+          "name": "HV Cable Pulling Winch",
+          "category": "cable_pulling",
+          "count": 2,
+          "owned": true,
+          "status": "AVAILABLE",
+          "assignedProjectId": "",
+          "capabilities": [
+            "cable_pulling"
+          ]
+        },
+        {
+          "equipmentId": "eq-grid-test-01",
+          "name": "HV Test Van",
+          "category": "electrical_testing",
+          "count": 1,
+          "owned": true,
+          "status": "AVAILABLE",
+          "assignedProjectId": "",
+          "capabilities": [
+            "electrical_testing"
+          ]
+        },
+        {
+          "equipmentId": "eq-grid-exc-01",
+          "name": "3T Excavator",
+          "category": "excavator",
+          "count": 2,
+          "owned": true,
+          "status": "AVAILABLE",
+          "assignedProjectId": "",
+          "capabilities": [
+            "excavator"
+          ]
+        }
+      ],
+      "certifications": [
+        {
+          "name": "BESCOM Electrical Works Approval",
+          "status": "VALID",
+          "expiry": "2027-06"
+        },
+        {
+          "name": "EVSE Installation Certification",
+          "status": "VALID",
+          "expiry": "2027-06"
+        },
+        {
+          "name": "BBMP Road Cutting Permit",
+          "status": "VALID",
+          "expiry": "2027-06"
+        }
+      ],
+      "currentProjectAssignments": [
+        {
+          "projectId": "active-package",
+          "workersAssigned": 30,
+          "crewsAssigned": 2,
+          "equipmentIds": []
+        }
+      ],
+      "previousProjects": [
+        "Electronic City, Bengaluru utility works (2025)"
+      ],
+      "gaps": []
     }
   ]
 }
